@@ -1,5 +1,6 @@
-H8mini Blue board version
-this is currently alpha stage (needs testing)
+###H8mini Blue board version###
+
+_this is currently alpha stage (needs testing)_
 
 
 
