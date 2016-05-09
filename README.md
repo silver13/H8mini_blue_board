@@ -3,8 +3,10 @@
 _this is currently alpha stage (needs testing)_
 
 
+The H8 uses a stm32f030 and a XN297L radio
 
-Original text from cg023 follows:
+
+###Original text from cg023 follows:###
 
 This is an alternate firmware for the Eachine CG023 quadcopter. It is a port of the Eachine H8 firmware, also by me ( silverxxx).
 
