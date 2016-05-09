@@ -1,5 +1,9 @@
-# CG023
-##**Firmware for CG023**
+H8mini Blue board version
+this is currently alpha stage (needs testing)
+
+
+
+Original text from cg023 follows:
 
 This is an alternate firmware for the Eachine CG023 quadcopter. It is a port of the Eachine H8 firmware, also by me ( silverxxx).
 
