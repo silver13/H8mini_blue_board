@@ -3,7 +3,7 @@
 _this is currently alpha stage (needs testing)_
 
 
-The H8 uses a stm32f030 and a XN297L radio
+The H8 uses a stm32f030 and a XN297L 3 wire radio
 
 ###11.05
 * added linux compilation support
