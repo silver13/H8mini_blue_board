@@ -5,6 +5,9 @@ _this is currently alpha stage (needs testing)_
 
 The H8 uses a stm32f030 and a XN297L radio
 
+###11.05
+* added linux compilation support
+
 ###10.05
 * minor update
 * additional protocols now work
