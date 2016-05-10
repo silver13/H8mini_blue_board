@@ -5,10 +5,8 @@
 #include "binary.h"
 #include "config.h"
 
+#ifdef SOFTSPI_4WIRE
 #ifndef DISABLE_SPI_PINS	
-
-GPIO_InitTypeDef mosi_init_struct;
-int mosi_out = 0;
 
 void spi_init(void)
 {    
@@ -20,6 +18,9 @@ void spi_init(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
+	GPIO_InitStructure.GPIO_Pin = SPI_MOSI_PIN;
+	GPIO_Init(SPI_MOSI_PORT, &GPIO_InitStructure);
 	
 	GPIO_InitStructure.GPIO_Pin = SPI_CLK_PIN;
 	GPIO_Init(SPI_CLK_PORT, &GPIO_InitStructure);
@@ -27,44 +28,12 @@ void spi_init(void)
 	GPIO_InitStructure.GPIO_Pin = SPI_SS_PIN;
 	GPIO_Init(SPI_SS_PORT, &GPIO_InitStructure);
 	
-		
-  mosi_init_struct.GPIO_Pin = SPI_MOSI_PIN;
-  mosi_init_struct.GPIO_Mode = GPIO_Mode_IN;
-  mosi_init_struct.GPIO_OType = GPIO_OType_PP;
-  mosi_init_struct.GPIO_PuPd = GPIO_PuPd_UP;
-  mosi_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
-	
-	GPIO_Init(SPI_MOSI_PORT, &mosi_init_struct);
-	
-	//mosi_out = 0; // already
+	//miso should be input by default
 	
 	spi_csoff();
 
 }
 
-
-
-void mosi_input( void)
-{
-	if ( mosi_out)
-	{
-	mosi_out = 0;
-	mosi_init_struct.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_Init(SPI_MOSI_PORT, &mosi_init_struct);	
-	}
-	
-}
-
-void mosi_output( void)
-{
-	if ( !mosi_out)
-	{
-	mosi_out = 1;
-	mosi_init_struct.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_Init(SPI_MOSI_PORT, &mosi_init_struct);	
-	}
-	
-}
 
 #define gpioset( port , pin) port->BSRR = pin
 #define gpioreset( port , pin) port->BRR = pin
@@ -74,8 +43,8 @@ void mosi_output( void)
 #define SCKHIGH gpioset( SPI_CLK_PORT, SPI_CLK_PIN);
 #define SCKLOW gpioreset( SPI_CLK_PORT, SPI_CLK_PIN);
 
-
-#define READMOSI (SPI_MOSI_PORT->IDR & SPI_MOSI_PIN)
+//#define READMISO (GPIO_ReadInputDataBit(SPI_MISO_PORT, SPI_MISO_PIN) )
+#define READMISO (SPI_MISO_PORT->IDR & SPI_MISO_PIN)
 
 #pragma push
 
@@ -95,7 +64,6 @@ void spi_csoff( )
 
 void spi_sendbyte ( int data)
 {
-mosi_output();
 for ( int i =7 ; i >=0 ; i--)
 	{
 		if (  (data>>i)&1  ) 
@@ -112,7 +80,7 @@ for ( int i =7 ; i >=0 ; i--)
 	}
 }
 
-/*
+
 int spi_sendrecvbyte2( int data)
 { 
 	int recv = 0;
@@ -135,9 +103,8 @@ int spi_sendrecvbyte2( int data)
 	  recv = recv>>8;
     return recv;
 }
-*/
 
-/*
+
  int spi_sendrecvbyte( int data)
 { int recv = 0;
 
@@ -165,28 +132,7 @@ int spi_sendrecvbyte2( int data)
 
     return recv;
 }
-*/
 
- int spi_recvbyte( void)
-{ int recv = 0;
-  mosi_input();
-	for ( int i = 7 ; i >=0 ; i--)
-	{
-		recv = recv<<1;
-		
-		
-		SCKHIGH;
-		
-		if ( READMOSI ) recv= recv|1;
-
-		SCKLOW;
-		
-	}	
-
-    return recv;
-}
-
-/*
 
  int spi_sendzerorecvbyte( )
 { int recv = 0;
@@ -205,7 +151,7 @@ int spi_sendrecvbyte2( int data)
 	}	
     return recv;
 }
-*/
+
 
 #pragma pop
 
@@ -224,13 +170,10 @@ int spi_sendrecvbyte( int x)
 	{ return 255;}
 int spi_sendzerorecvbyte( void )
 	{ return 255;}
- int spi_recvbyte( void)
- {
-	  return 255;
- }
+
 
 #endif
-
+#endif
 
 
 

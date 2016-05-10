@@ -5,6 +5,7 @@
 #include "binary.h"
 #include "config.h"
 
+#ifdef SOFTSPI_3WIRE
 #ifndef DISABLE_SPI_PINS	
 
 GPIO_InitTypeDef mosi_init_struct;
@@ -232,7 +233,7 @@ int spi_sendzerorecvbyte( void )
 #endif
 
 
-
+#endif
 
 
 

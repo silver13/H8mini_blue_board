@@ -95,6 +95,14 @@
 #define SPI_SS_PIN GPIO_Pin_3
 #define SPI_SS_PORT GPIOA
 
+//spi type
+#define SOFTSPI_3WIRE
+//#define SOFTSPI_4WIRE
+// radio type
+#define XN297L_3WIRE
+//#define XN297
+
+
 
 // PWM PINS DEFINITIONS 
 // currently pins PA0 to PA3 , PA5 , PA8 to PA11 supported

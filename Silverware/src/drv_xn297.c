@@ -4,11 +4,8 @@
 
 #include "project.h"
 #include "xn297.h"
-#include "hardware.h"
 
-#ifdef XN297L_3WIRE
-
-extern int spi_recvbyte( void);
+#ifdef XN297
 
 void xn_writereg( int reg , int val)
 {
@@ -24,8 +21,8 @@ int xn_readreg( int reg)
 {
 	reg = reg&0x0000001F;
 	spi_cson();
-	spi_sendbyte( reg);
-	int val =spi_recvbyte();
+	spi_sendrecvbyte( reg);
+	int val =spi_sendzerorecvbyte();
 	spi_csoff();
 	return val;
 }
@@ -33,21 +30,30 @@ int xn_readreg( int reg)
 int xn_command( int command)
 {
 	spi_cson();
-	spi_sendbyte(command);
+	int status = spi_sendrecvbyte(command);
 	spi_csoff();
-	return 0;
+	return status;
 }
 //
+void _spi_write_address( int reg, int val);
+
+void _spi_write_address( int reg, int val)
+{
+	spi_cson();
+	spi_sendbyte( reg);
+	spi_sendbyte( val);
+	spi_csoff();
+}
 
 
 void xn_readpayload( int *data , int size )
 {
 	int index = 0;
 	spi_cson();
-	spi_sendbyte( B01100001 ); // read rx payload
+	spi_sendrecvbyte( B01100001 ); // read rx payload
 	while(index<size)
 	{
-	data[index]=	spi_recvbyte();
+	data[index]=	spi_sendzerorecvbyte();
 	index++;
 	}
 	spi_csoff();
@@ -87,17 +93,17 @@ void xn_writepayload( int data[] , int size )
 {
 	int index = 0;
 	spi_cson();
-	spi_sendbyte( 0xA0 ); // write tx payload
+	spi_sendrecvbyte( 0xA0 ); // write tx payload
 	while(index<size)
 	{
-	spi_sendbyte( data[index] );
+	spi_sendrecvbyte( data[index] );
 	index++;
 	}
 	spi_csoff();
 }
 
-
 #endif
+
 
 
 
