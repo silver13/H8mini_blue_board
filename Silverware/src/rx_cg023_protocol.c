@@ -69,11 +69,11 @@ uint8_t demodcal[6] = { 0x39 , 0x0b , 0xdf , 0xc4 , 0xa7 , 0x03};
 
 void rx_init()
 {
-
+/*
 writeregs( bbcal , sizeof(bbcal) );
 writeregs( rfcal , sizeof(rfcal) );
 writeregs( demodcal , sizeof(demodcal) );
-
+*/
 int rxaddress[5] =  {0x26, 0xA8, 0x67, 0x35, 0xCC};
 
 xn_writerxaddress( rxaddress);
@@ -92,9 +92,8 @@ xn_writerxaddress( rxaddress);
 
 static char checkpacket()
 {
-	spi_cson();
-	int status = spi_sendzerorecvbyte();
-	spi_csoff();
+	int status = xn_readreg( 7 );
+  
 	if( (status & B00001110) != B00001110 )
 	{
 		// rx fifo not empty		

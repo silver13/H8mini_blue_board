@@ -322,13 +322,13 @@ while ( time - timestart < CAL_TIME  &&  time - timemax < 15e6 )
 		
 if ( (time - timestart)%200000 > 100000) 
 {
-	ledon(B00000101);
-	ledoff(B00001010);
+	ledon(B00001010);
+	ledoff(B00000101);
 }
 else 
 {
-	ledon(B00001010);
-	ledoff(B00000101);
+	ledon(B00000101);
+	ledoff(B00001010);
 }
 		
 		 for ( int i = 0 ; i < 3 ; i++)

@@ -105,7 +105,7 @@ int main(void)
 {
 
 	clk_init();
-	delay(100000);
+	
 	delay(1000);
 	
   gpio_init();
@@ -115,40 +115,7 @@ int main(void)
   softi2c_init();
 	
 	spi_init();
-delay(100000);
-  
- #define TESTPWM_PIN GPIO_Pin_1
- #define TESTPWM_PORT GPIOB
-#ifdef TESTPWM 
-  {
-
-  GPIO_InitTypeDef  GPIO_InitStructure;
-
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    
-  GPIO_InitStructure.GPIO_Pin = TESTPWM_PIN;	
-  GPIO_Init(TESTPWM_PORT, &GPIO_InitStructure); 
-    
-  }
-
-  for ( int i = 0 ; i < 500;i++)
-  {
-  delay(1000);
-  if ( i%10 == 0)
-  {
-   GPIO_SetBits(TESTPWM_PORT,TESTPWM_PIN  ) ;
-  }
-  else
-   GPIO_ResetBits(TESTPWM_PORT,TESTPWM_PIN  ) ; 
-  }
-  GPIO_ResetBits(TESTPWM_PORT,TESTPWM_PIN  ) ; 
-	
-  delay(100000);
-#endif
-  
+delay(100000);	
 	pwm_init();
 
 	pwm_set( MOTOR_BL , 0);
@@ -344,7 +311,14 @@ else
 				{
 					ledflash ( 500000, 15);			
 				}
-			else ledon( 255);	
+			else 
+      {
+        #ifdef LEDS_OFF
+        ledoff( 255);
+        #else
+        ledon( 255);
+        #endif        
+      }
 		} 		
 		
 	}

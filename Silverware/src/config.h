@@ -133,7 +133,8 @@
 //#define ACRO_ONLY
 
 // Radio protocol selection
-// select only one
+// select only one 
+//
 //#define RX_CG023_PROTOCOL
 //#define RX_H7_PROTOCOL
 #define RX_BAYANG_PROTOCOL
@@ -147,7 +148,9 @@
 #define DISABLE_HEADLESS
 #define DISABLE_FLIP_SEQUENCER
 
-
+// turn leds off during flight (to save power)
+// battery low will still work
+//#define LEDS_OFF
 
 
 

@@ -87,11 +87,11 @@ int channel;
 
 
 void rx_init() {
-
+/*
 	writeregs(bbcal, sizeof(bbcal));
 	writeregs(rfcal, sizeof(rfcal));
 	writeregs(demodcal, sizeof(demodcal));
-
+*/
 	xn_writerxaddress(rxaddress);
 
 	xn_writereg( EN_AA, 0);	// aa disabled
@@ -107,9 +107,7 @@ void rx_init() {
 }
 
 static char checkpacket() {
-	spi_cson();
-	int status = spi_sendzerorecvbyte();
-	spi_csoff();
+	int status = xn_readreg( 7 );
 	if ((status & B00001110) != B00001110) {
 		// rx fifo not empty		
 		return 2;

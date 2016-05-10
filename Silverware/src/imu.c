@@ -176,22 +176,24 @@ void imu_calc(void)
 
 	attitude[0] = atan2approx(GEstG[0], GEstG[2]) ;
 	attitude[1] = atan2approx(GEstG[1], GEstG[2])  ;
-		
-	if ( accmag  > 0.8f * ACC_1G && accmag  < 1.2f * ACC_1G )
-  {
-	
-	float error[3];
+
 	static float accattitude[3];
-		
-	
-	for (int axis = 0; axis < 3; axis++)
+  	for (int axis = 0; axis < 3; axis++)
 	{
 		accel[axis] = accel[axis] /  accmag ;
 	}	
-	
-		
+			
 	accattitude[0] = atan2approx(accel[0], accel[2]) ;
-	accattitude[1] = atan2approx(accel[1], accel[2]) ;		
+	accattitude[1] = atan2approx(accel[1], accel[2]) ;	
+
+	if ( accmag  > 0.8f * ACC_1G && accmag  < 1.2f * ACC_1G && fabsf(accattitude[0]) < 60.0f && fabsf(accattitude[1]) < 60.0f)
+  {
+	
+	float error[3];
+
+		
+	
+	
 
 	for ( int axis = 0 ; axis < 2 ; axis++)
 	{
@@ -200,7 +202,7 @@ void imu_calc(void)
 		
 		error[axis] = accattitude[axis] - attitude[axis];
 //	error[axis] = accattitude[axis] - attitudefilt[axis];
-
+    
 	pterm[axis] = error[axis] * (float) Kp_ROLLPITCH;
 
 	 lpf ( &filteredp2[axis],pterm[axis],0.999);

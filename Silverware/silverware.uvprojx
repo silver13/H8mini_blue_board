@@ -580,9 +580,9 @@
               <FilePath>.\src\drv_softi2c.c</FilePath>
             </File>
             <File>
-              <FileName>drv_spi.c</FileName>
+              <FileName>drv_spi_3wire.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\drv_spi.c</FilePath>
+              <FilePath>.\src\drv_spi_3wire.c</FilePath>
             </File>
             <File>
               <FileName>drv_time.c</FileName>
@@ -590,9 +590,9 @@
               <FilePath>.\src\drv_time.c</FilePath>
             </File>
             <File>
-              <FileName>drv_xn297.c</FileName>
+              <FileName>drv_xn297_3wire.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\drv_xn297.c</FilePath>
+              <FilePath>.\src\drv_xn297_3wire.c</FilePath>
             </File>
           </Files>
         </Group>

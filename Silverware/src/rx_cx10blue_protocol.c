@@ -69,11 +69,11 @@ delay(1000);
 
 void rx_init()
 {	
-
+/*
 writeregs( bbcal , sizeof(bbcal) );
 writeregs( rfcal , sizeof(rfcal) );
 writeregs( demodcal , sizeof(demodcal) );
-
+*/
 int rxaddress[5] =  {0xCC,0xCC,0xCC,0xCC,0xCC};
 
 xn_writerxaddress( rxaddress);
@@ -98,11 +98,8 @@ xn_writetxaddress( rxaddress);
 
 static char checkpacket()
 {
-	//int status = xn_command(NOP);
-	spi_cson();
-	int status = spi_sendzerorecvbyte();
-//	statusdebug = status;
-	spi_csoff();
+int status = xn_readreg( 7 );
+  
 	if ( status&(1<<MASK_RX_DR) )
 	{	 // rx clear bit
 		// this is not working well
