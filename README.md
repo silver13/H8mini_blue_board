@@ -5,6 +5,10 @@ _this is currently alpha stage (needs testing)_
 
 The H8 uses a stm32f030 and a XN297L 3 wire radio
 
+###Wiki
+http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
+
+###Updates:
 ###11.05
 * added linux compilation support
 
