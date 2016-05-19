@@ -9,6 +9,11 @@ The H8 uses a stm32f030 and a XN297L 3 wire radio
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Updates:
+
+###19.05
+* added gestures
+* changed imu from the experimental one that somehow made it in, to the old one
+
 ###11.05
 * added linux compilation support
 
