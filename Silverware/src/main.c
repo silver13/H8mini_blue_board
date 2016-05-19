@@ -86,7 +86,7 @@ float rx[4];
 
 // holds auxilliary channels
 // the last 2 are always on and off respectively
-char aux[AUXNUMBER] = { 0 ,0 ,0 , 0 , 1 , 0};
+char aux[AUXNUMBER];
 char lastaux[AUXNUMBER];
 // if an aux channel has just changed
 char auxchange[AUXNUMBER];
@@ -96,7 +96,8 @@ extern int rxmode;
 // failsafe on / off
 extern int failsafe;
 
-
+int ledcommand = 0;
+unsigned long ledcommandtime = 0;
 
 
 void failloop( int val);
@@ -146,6 +147,17 @@ delay(100000);
 	
 	rx_init();
 
+/*
+	for ( int i = 0 ; i < AUXNUMBER; i++)
+	{
+	aux[i] = 0;
+	}
+*/
+	aux[CH_ON] = 1;
+	
+#ifdef AUX1_START_ON
+	aux[CH_AUX1] = 1;
+#endif
 
 if ( RCC->CSR & 0x80000000 )
 {
@@ -313,11 +325,27 @@ else
 				}
 			else 
       {
-        #ifdef LEDS_OFF
-        ledoff( 255);
-        #else
-        ledon( 255);
-        #endif        
+				#ifdef GESTURES2_ENABLE
+				if (ledcommand)
+						  {
+							  if (!ledcommandtime)
+								  ledcommandtime = gettime();
+							  if (gettime() - ledcommandtime > 500000)
+							    {
+								    ledcommand = 0;
+								    ledcommandtime = 0;
+							    }
+							  ledflash(100000, 8);
+						  }
+						else
+					#endif // end gesture led flash
+							{
+							#ifdef LEDS_OFF
+							ledoff( 255);
+							#else
+							ledon( 255);
+							#endif 
+							}       
       }
 		} 		
 		

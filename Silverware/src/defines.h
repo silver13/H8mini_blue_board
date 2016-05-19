@@ -12,7 +12,6 @@
 #define DEGTORAD 0.017453292f
 #define RADTODEG 57.29577951f
 
-#define AUXNUMBER 6
 
 #define ROLL 0
 #define PITCH 1
@@ -22,12 +21,37 @@
 #define RXMODE_NORMAL (!RXMODE_BIND)
 
 
-#define CH_ON 4
-#define CH_OFF 5
+#define AUXNUMBER 12
+
+
+#define CH_ON (AUXNUMBER - 2)
+#define CH_OFF (AUXNUMBER - 1)
 #define CH_FLIP 0
 #define CH_EXPERT 1
 #define CH_HEADFREE 2
 #define CH_RTH 3
+#define CH_AUX1 4
+#define CH_AUX2 5
+// trims numbers have to be sequential, atart at CH_PIT_TRIM
+#define CH_PIT_TRIM 6
+#define CH_RLL_TRIM 7
+#define CH_THR_TRIM 8
+#define CH_YAW_TRIM 9
+
+#define CH_CG023_LED 3
+#define CH_CG023_FLIP 0
+#define CH_CG023_STILL 2
+#define CH_CG023_VIDEO 1
+
+#define CH_H7_FLIP 0
+#define CH_H7_VIDEO 1
+#define CH_H7_FS 2
+
+#define CH_CX10_CH0 0
+#define CH_CX10_CH2 2
+
+#define CH_AUX3 CH_OFF
+#define CH_AUX4 CH_OFF
 
 
 #define CH1 0

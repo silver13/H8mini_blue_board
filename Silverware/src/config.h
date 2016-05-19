@@ -84,24 +84,38 @@
 #define ACC_LOW_PASS_FILTER 5
 
 
-// channel for headless mode switch
+// channel assignments (switches)
 
 // H8 protocol channels
-// 0 - flip, 1 - expert, 2 - headfree, 3 - headingreturn
+// CH_FLIP - flip,  CH_HEADFREE - headfree, CH_RTH - headingreturn
 
 // cg023 protocol chanels
-// 0 - flip, 
-// 1 , 2 , 3 - video , still ,led
+// CH_CG023_FLIP , CH_CG023_VIDEO , CH_CG023_STILL , CH_CG023_LED
 
-// 4 - on always ( all protocols)
-// 5 - off always ( all protocols)
-#define HEADLESSMODE 5
+// H7 channels
+// CH_H7_FLIP , CH_H7_VIDEO , CH_H7_FS
 
-#define LEVELMODE 2
+// CX10
+// CH_CX10_CH0  (unknown) , CH_CX10_CH2 ( rates mid)
 
-#define STARTFLIP 5
+// CH_ON - on always ( all protocols)
+// CH_OFF - off always ( all protocols)
+// CH_AUX1 - gestures
+// CH_ON , CH_OFF , CH_FLIP , CH_EXPERT
+// CH_HEADFREE , CH_RTH , CH_AUX1 , CH_AUX2 , CH_AUX3 , CH_AUX4
+// CH_PIT_TRIM, CH_RLL_TRIM, CH_THR_TRIM, CH_YAW_TRIM
+#define HEADLESSMODE CH_OFF
 
+#define LEVELMODE CH_AUX1
 
+#define STARTFLIP CH_OFF
+
+// Gestures enable ( gestures 1 = acc only)
+//#define GESTURES1_ENABLE
+#define GESTURES2_ENABLE
+
+// aux1 channel starts on if this is defined, otherwise off.
+#define AUX1_START_ON
 
 // enable motor filter
 // hanning 3 sample fir filter

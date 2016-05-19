@@ -35,6 +35,7 @@ THE SOFTWARE.
 #include "sixaxis.h"
 #include "drv_fmc.h"
 #include "flip_sequencer.h"
+#include "gestures.h"
 
 extern float rx[7];
 extern float gyro[3];
@@ -43,6 +44,9 @@ extern float pidoutput[PIDNUMBER];
 
 extern float angleerror[3];
 extern float attitude[3];
+
+extern int ledcommand;
+
 
 int onground = 1;
 float thrsum;
@@ -103,6 +107,7 @@ void control( void)
 	// check for accelerometer calibration command
 	if ( onground )
 	{
+	#ifdef GESTURES1_ENABLE
 		if ( rx[1] < -0.8  )
 		{
 			if ( !timecommand) timecommand = gettime();
@@ -110,10 +115,11 @@ void control( void)
 			{
 				// do command
 					
-			    gyro_cal();	// for flashing lights				  
+			    gyro_cal();	// for flashing lights	
+					#ifndef ACRO_ONLY
 			    acc_cal();
 				  extern float accelcal[3];
-				  #ifndef ACRO_ONLY
+				  
 				  fmc_write( accelcal[0] + 127 , accelcal[1] + 127);
 				  #endif
 			    // reset loop time so max loop time is not exceeding
@@ -122,7 +128,42 @@ void control( void)
 		      timecommand = 0;
 			}		
 		}
-		else timecommand = 0;				
+		else timecommand = 0;	
+		#endif
+		#ifdef GESTURES2_ENABLE
+		int command = gestures2();
+
+		if (command)
+	  {
+		  if (command == 3)
+		    {
+			    gyro_cal();	// for flashing lights
+			    acc_cal();
+			    #ifndef ACRO_ONLY
+			    acc_cal();
+				  extern float accelcal[3];
+				  
+				  fmc_write( accelcal[0] + 127 , accelcal[1] + 127);
+				  #endif
+			    // reset loop time 
+			    extern unsigned lastlooptime;
+			    lastlooptime = gettime();
+		    }
+		  else
+		    {
+			    ledcommand = 1;
+			    if (command == 2)
+			      {
+				      aux[CH_AUX1] = 1;
+
+			      }
+			    if (command == 1)
+			      {
+				      aux[CH_AUX1] = 0;
+			      }
+		    }
+	  }
+		#endif
 	}
 #ifndef DISABLE_HEADLESS 
 // yaw angle for headless mode	

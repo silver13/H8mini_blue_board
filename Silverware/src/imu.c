@@ -22,6 +22,13 @@ extern debug_type debug;
 
 #define ACC_1G 2048.0f
 
+// disable drift correction ( for testing)
+#define DISABLE_ACC 0
+
+// filter time in seconds
+// time to correct gyro readings using the accelerometer
+// 1-4 are generally good
+#define FILTERTIME 2.0
 
 // accel magnitude limits for drift correction
 #define ACC_MIN 0.7f
@@ -31,9 +38,6 @@ extern debug_type debug;
 float GEstG[3] = { 0, 0, ACC_1G };
 
 float attitude[3];
-
-float estimated_bias[3];
-float filteredp2[3];
 
 extern float gyro[3];
 extern float accel[3];
@@ -80,7 +84,7 @@ float Q_rsqrt( float number )
 }
 
 
-
+void vectorcopy(float *vector1, float *vector2);
 
 static unsigned long gptimer;
 
@@ -98,12 +102,26 @@ float calcmagnitude(float vector[3])
 }
 
 
+void vectorcopy(float *vector1, float *vector2)
+{
+	for (int axis = 0; axis < 3; axis++)
+	  {
+		  vector1[axis] = vector2[axis];
+	  }
+}
 
 float offset[3];
 
 void imu_calc(void)
 {
+
+
+	float EstG[3];
 	float deltatime;	// time in seconds
+
+
+	vectorcopy(&EstG[0], &GEstG[0]);
+
 
 	unsigned long time = gettime();
 	deltatime = time - gptimer;
@@ -127,18 +145,17 @@ void imu_calc(void)
 	deltaGyroAngle[i] = (gyro[i]) * deltatime + offset[i];
 	}
 	
-
 	
-	GEstG[2] = GEstG[2] - (deltaGyroAngle[0]) * GEstG[0];
-	GEstG[0] = (deltaGyroAngle[0]) * GEstG[2] +  GEstG[0];
+	EstG[2] = EstG[2] - (deltaGyroAngle[0]) * EstG[0];
+	EstG[0] = (deltaGyroAngle[0]) * EstG[2] +  EstG[0];
 
 
-	GEstG[1] =  GEstG[1] + (deltaGyroAngle[1]) * GEstG[2];
-	GEstG[2] = -(deltaGyroAngle[1]) * GEstG[1] +  GEstG[2];
+	EstG[1] =  EstG[1] + (deltaGyroAngle[1]) * EstG[2];
+	EstG[2] = -(deltaGyroAngle[1]) * EstG[1] +  EstG[2];
 
 
-	GEstG[0] = GEstG[0] - (deltaGyroAngle[2]) * GEstG[1];
-	GEstG[1] = (deltaGyroAngle[2]) * GEstG[0] +  GEstG[1];
+	EstG[0] = EstG[0] - (deltaGyroAngle[2]) * EstG[1];
+	EstG[1] = (deltaGyroAngle[2]) * EstG[0] +  EstG[1];
 
 
 #ifdef DEBUG
@@ -146,16 +163,7 @@ void imu_calc(void)
 
 	limit180(&attitude[2]);
 #endif
-
-
-//static float accel_filt[3]; 
-
-#define FILTERCALC( sampleperiod, filtertime) (1.0f - ((float)sampleperiod) / ((float)filtertime))
-
-	//for (int axis = 0; axis < 3; axis++)
-	//{
-	//	lpf( &accel_filt[axis] , accel[axis] , FILTERCALC( 0.001 , 0.25));
-	//}	
+// orientation vector magnitude
 
 
 // calc acc mag
@@ -163,72 +171,54 @@ void imu_calc(void)
 
 	accmag = calcmagnitude(&accel[0]);
 	#ifdef DEBUG
-	//debug.accmag= accmag;	
-	//debug.gmag = calcmagnitude(&GEstG[0]);
+	debug.accmag= accmag;	
+	debug.gmag = calcmagnitude(&GEstG[0]);
 	#endif
 
+	static unsigned int count = 0;
 
-	float pterm[3];
+	if ((accmag > ACC_MIN * ACC_1G) && (accmag < ACC_MAX * ACC_1G) && !DISABLE_ACC)
+	  {	
+		  if (count >= 3 || 1)	//
+		    {
+						// normalize acc
+					for (int axis = 0; axis < 3; axis++)
+					{
+						accel[axis] = accel[axis] * ( ACC_1G / accmag);
+					}
+			    float filtcoeff = lpfcalc(deltatime, FILTERTIME);
+			    for (int x = 0; x < 3; x++)
+			      {
+				      lpf(&EstG[x], accel[x], filtcoeff);
+			      }
+		    }
+		  count++;
+	  }
+	else
+	  {			
+			// acc mag out of bounds
+		  count = 0;
+			/*
+		  if ( gettime() % 20 == 5)
+		    {
+			    float mag = 0;
+			    mag = calcmagnitude(&EstG[0]);
 
+			    // normalize orientation vector
 
-#define Kp_ROLLPITCH 1e-6
+			    for (int x = 0; x < 3; x++)
+			      {
+				      EstG[x] = EstG[x] * ( ACC_1G / mag);
+			      }
+		    }
+			*/
+	  }
 
+	vectorcopy(&GEstG[0], &EstG[0]);
 
-	attitude[0] = atan2approx(GEstG[0], GEstG[2]) ;
-	attitude[1] = atan2approx(GEstG[1], GEstG[2])  ;
+	attitude[0] = atan2approx(EstG[0], EstG[2]) ;
 
-	static float accattitude[3];
-  	for (int axis = 0; axis < 3; axis++)
-	{
-		accel[axis] = accel[axis] /  accmag ;
-	}	
-			
-	accattitude[0] = atan2approx(accel[0], accel[2]) ;
-	accattitude[1] = atan2approx(accel[1], accel[2]) ;	
-
-	if ( accmag  > 0.8f * ACC_1G && accmag  < 1.2f * ACC_1G && fabsf(accattitude[0]) < 60.0f && fabsf(accattitude[1]) < 60.0f)
-  {
-	
-	float error[3];
-
-		
-	
-	
-
-	for ( int axis = 0 ; axis < 2 ; axis++)
-	{
-//	static float attitudefilt[3];	
-//	lpf( &attitudefilt[axis] , attitude[axis] , FILTERCALC( 0.001 , 0.25));
-		
-		error[axis] = accattitude[axis] - attitude[axis];
-//	error[axis] = accattitude[axis] - attitudefilt[axis];
-    
-	pterm[axis] = error[axis] * (float) Kp_ROLLPITCH;
-
-	 lpf ( &filteredp2[axis],pterm[axis],0.999);
-
-		if ( filteredp2[axis] > 1e-5f )
-		{
-			estimated_bias[axis] += 0.3e-8f; // 1 lsb over 1 sec 1e-6
-			
-		}
-		if ( filteredp2[axis] < -1e-5f) // -1e-6
-		{
-			estimated_bias[axis] -= 0.3e-8f;
-		}
-	
-	}
-  }
-  else
-  {	
-	 pterm[0] = 0;
-   pterm[1] = 0;
-   pterm[2] = 0;	 
-  }
-	
-offset[0] = pterm[0] + estimated_bias[0] + 0e-5f;
-offset[1] = pterm[1] + estimated_bias[1];
-//offset[2] = pterm[2] + estimated_bias[2];
+	attitude[1] = atan2approx(EstG[1], EstG[2])  ;
 
 }
 
@@ -259,9 +249,6 @@ float atan2approx(float y, float x)
 
 	t = (y / x);
 	// atan function for 0 - 1 interval
-	//dphi = M_PI / 4 * t - t * ((t) - 1) * (0.2447f + 0.0663f * (t));
-
-//	dphi = t*(M_PI / 4  -  ((t) - 1) * (0.2447f + 0.0663f * (t)));
 	dphi = t*( ( M_PI/4 + 0.2447f ) + t *( ( -0.2447f + 0.0663f ) + t*( - 0.0663f)) );
 	phi *= M_PI / 4;
 	dphi = phi + dphi;
@@ -269,4 +256,5 @@ float atan2approx(float y, float x)
 		dphi -= 2 * M_PI;
 	return RADTODEG * dphi;
 }
+
 
