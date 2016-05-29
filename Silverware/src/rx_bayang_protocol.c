@@ -165,7 +165,7 @@ static int decodepacket( void)
 		{// low rates
 			for ( int i = 0 ; i <3; i++)
 			{
-				rx[0] = rx[0] * (float) BAYANG_LOWRATE_MULTIPLIER;
+				rx[i] = rx[i] * (float) BAYANG_LOWRATE_MULTIPLIER;
 			}
 		}
 		// trims are 50% of controls at max		
