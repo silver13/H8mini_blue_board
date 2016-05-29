@@ -2,6 +2,16 @@
 
 _this is currently alpha stage (needs testing)_
 
+From rcg user __kmtam__
+> Hi all, I finally got the h8mini blue board erased and flashed to Silverxxx firmware after zillion times of tried and error.
+> The board's labelled wrong with the CLK and DAT got swapped....
+> 
+> This is how I got it work from the STLINK to the H8mini blue board:
+> SWDIO->CLK
+> GND->GND
+> SWCLK->DAT
+> 
+> Thanks Silverxxx for this wonderful firmware! Cheers! 
 
 The H8 uses a stm32f030 and a XN297L 3 wire radio
 
