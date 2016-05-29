@@ -13,12 +13,34 @@ From rcg user __kmtam__
 > 
 > Thanks Silverxxx for this wonderful firmware! Cheers! 
 
+From rcg user __ketsa__
+> Thanks!!! I finally managed to flash my blue board.
+> 
+> It was not straightforward, I tried the suggested connections and was still getting "ST-LINK USB communication error."
+> 
+> I then found a file in my keil directory named "ST-LinkUpgrade.exe" So I Upgraded the FW of my ST-link to "V2.J24.S4 > > > STM32+STM8 Debugger"
+> 
+> Then i was getting a different message : "no target" hmm. progress. but still not flashing.
+> Then I removed the battery, plugged it in and it erased !
+> 
+> I tried to flash : "no target."
+> 
+> Replug battery, and it flashed !
+
 The H8 uses a stm32f030 and a XN297L 3 wire radio
+
+
+
+### Flashing instructions
+http://www.rcgroups.com/forums/showthread.php?t=2634611
 
 ###Wiki
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Updates:
+
+###30.05.16
+* fixed low rates control issue in yaw+roll
 
 ###19.05
 * added gestures
