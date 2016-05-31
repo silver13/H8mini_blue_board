@@ -1,7 +1,5 @@
 ###H8mini Blue board version###
 
-_this is currently alpha stage (needs testing)_
-
 From rcg user __kmtam__
 > Hi all, I finally got the h8mini blue board erased and flashed to Silverxxx firmware after zillion times of tried and error.
 > The board's labelled wrong with the CLK and DAT got swapped....
@@ -27,9 +25,24 @@ From rcg user __ketsa__
 > 
 > Replug battery, and it flashed !
 
+From rcg user __silverxxxa__
+> I made a blue board quad to see what's happening with the flashes.
+> 
+> So far I found out that it does indeed stop working after the st-link gets disconnected from usb.
+> This seems some software issue, maybe with keil.
+> 
+> The st-link starts working after it is used in some other way , such as: flash another quad with keil(not blue board) , use > the "st-link utility" and connect to a board(even blue), use openocd and connect to a board (even blue).
+> 
+> After the "st-link usb communication error" comes up , you have to disconnect the st-link and reconnect it, or the above > fixes do not work.
+> 
+> Another find was that the nucleo built in st-link does not have this issue. It also does not get detected by the st-link firmware updater. A nucleo board is about $12
+> 
+> I'll have to find a more permanent solution, although openocd could be made a shortcut. 
 The H8 uses a stm32f030 and a XN297L 3 wire radio
 
+_The last 2 posts refer to windows and keil only_
 
+The H8 uses a stm32f030 and a XN297L 3 wire radio. The XN297L is differerent from the XN297 in that is supports 250K rate, and the dabug registers are different. A register option can be used to make the xn297L compatible with nrf24 directly. (not tested) [XN297L datasheet](https://drive.google.com/file/d/0B3AKcbg1PFrnbHRXMzUzUUFmUFk/view?pref=2&pli=1) (use google translate)
 
 ### Flashing instructions
 http://www.rcgroups.com/forums/showthread.php?t=2634611
