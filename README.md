@@ -53,6 +53,8 @@ http://www.rcgroups.com/forums/showthread.php?t=2634611
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Updates:
+###03.07.16
+* updates from cg023 build merged
 
 ###30.05.16
 * fixed low rates control issue in yaw+roll
