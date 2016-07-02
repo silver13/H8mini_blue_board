@@ -44,7 +44,7 @@ _The last 2 posts refer to windows and keil only_
 
 This port supports both acro only and dual mode. To enable acro only, an option exist in config.h.
 
-The H8 uses a stm32f030 and a XN297L 3 wire radio. The XN297L is differerent from the XN297 in that is supports 250K rate, and the dabug registers are different. A register option can be used to make the xn297L compatible with nrf24 directly. (not tested) [XN297L datasheet](https://drive.google.com/file/d/0B3AKcbg1PFrnbHRXMzUzUUFmUFk/view?pref=2&pli=1) (use google translate)
+The H8 uses a stm32f030 and a XN297L 3 wire radio. The XN297L is different from the XN297 in that is supports 250K rate, and the dabug registers are different. A register option can be used to make the xn297L compatible with nrf24 directly. (not tested) [XN297L datasheet](https://drive.google.com/file/d/0B3AKcbg1PFrnbHRXMzUzUUFmUFk/view?pref=2&pli=1) (use google translate)
 
 ### Flashing instructions
 http://www.rcgroups.com/forums/showthread.php?t=2634611
