@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "drv_softi2c.h"
 #include "config.h"
 
-#ifndef DISABLE_SOFTI2C_PINS
 
 //#define i2cdebug
 
@@ -41,7 +40,9 @@ void delay(int);
 // inter-version fix
 #ifndef SOFTI2C_SPEED_SLOW1
 #ifndef SOFTI2C_SPEED_SLOW2
+#ifndef SOFTI2C_SPEED_FAST
 #define SOFTI2C_SPEED_FAST
+#endif
 #endif
 #endif
 
@@ -51,11 +52,20 @@ void delay(int);
 #endif
 
 #ifdef SOFTI2C_SPEED_SLOW1
+
+#ifdef __GNUC__
 void delayraw()
 {
-	uint32_t count = 1;
+	volatile uint8_t count = 1;
 	while (count--);
 }
+#else
+void delayraw()
+{
+	uint8_t count = 1;
+	while (count--);
+}
+#endif
 
 #define _delay  delayraw()
 #define _delay2 //delay(1)
@@ -408,23 +418,3 @@ return errora;
 
 
 ///////////////////////////////END I2C///////
-
-#else
-void softi2c_init()
-{}
-
-void softi2c_readdata(uint8_t device_address ,uint8_t register_address , int *data, int size ) 
-{ }
-
-uint8_t softi2c_write( uint8_t device_address , uint8_t address,uint8_t value)
-{
-	return 0;
-}
-
-uint8_t softi2c_read(uint8_t device_address , uint8_t register_address)
-{
-	return 255;
-}
-#endif
-
-

@@ -479,6 +479,11 @@
               <FilePath>.\src\rx_cx10blue_protocol.c</FilePath>
             </File>
             <File>
+              <FileName>osd_ltm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\osd_ltm.c</FilePath>
+            </File>
+            <File>
               <FileName>led.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\led.c</FilePath>
@@ -612,6 +617,11 @@
               <FileName>drv_xn297.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\drv_xn297.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_hw_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\drv_hw_i2c.c</FilePath>
             </File>
           </Files>
         </Group>

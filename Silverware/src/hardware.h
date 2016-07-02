@@ -48,9 +48,32 @@
 // disable softi2c pins 
 //#define DISABLE_SOFTI2C_PINS
 
-#define SOFTI2C_SPEED_MAX
+// i2c driver to use ( dummy - disables i2c )
+// hardware i2c used PB6 and 7 by default ( can also use PA9 and 10)
+
+//#define USE_HARDWARE_I2C
+#define USE_SOFTWARE_I2C
+//#define USE_DUMMY_I2C
+
+// pins for hw i2c , select one only
+// select pins PB6 and PB7
+// OR select pins PA9 and PA10
+//#define HW_I2C_PINS_PB67
+#define HW_I2C_PINS_PA910
+
+// I2C speed: fast = no delays 
+// slow1 = for i2c without pull-up resistors
+// slow2 = i2c failsafe speed
+//#define SOFTI2C_SPEED_FAST
 #define SOFTI2C_SPEED_SLOW1
 //#define SOFTI2C_SPEED_SLOW2
+
+//  hardware i2c speed ( 1000, 400 , 200 , 100Khz)
+//#define HW_I2C_SPEED_FAST2
+//#define HW_I2C_SPEED_FAST
+//#define HW_I2C_SPEED_SLOW1
+#define HW_I2C_SPEED_SLOW2
+
 
 #define SOFTI2C_SDAPIN GPIO_Pin_10
 #define SOFTI2C_SDAPORT GPIOA

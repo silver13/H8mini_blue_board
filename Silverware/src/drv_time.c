@@ -1,12 +1,19 @@
 //
 #include "project.h"
 #include "drv_time.h"
+#include "config.h"
 
 void failloop( int val);
 
 unsigned long lastticks;
 unsigned long globalticks;
 volatile unsigned long systickcount = 0;
+
+
+#ifndef SYS_CLOCK_FREQ_HZ
+#define SYS_CLOCK_FREQ_HZ 48000000
+#warning SYS_CLOCK_FREQ_HZ not present
+#endif
 
 
  // divider by 8 is enabled in this systick config                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
@@ -27,7 +34,7 @@ static __INLINE uint32_t SysTick_Config2(uint32_t ticks)
 void time_init()
 {
 
-	  if (SysTick_Config2( 48000000/8 ))
+	  if (SysTick_Config2( SYS_CLOCK_FREQ_HZ /8 ))
     {// not able to set divider
 			  failloop(5);
         while (1);
@@ -48,7 +55,13 @@ unsigned long elapsedticks;
 	}
 	
 lastticks = ticks;
+
+#ifdef ENABLE_OVERCLOCK
+globalticks = globalticks+ elapsedticks/8;
+#else
 globalticks = globalticks+ elapsedticks/6;
+#endif	
+	
 return globalticks;	
 }
 
@@ -60,13 +73,23 @@ unsigned long time = time_update();
 return time;		
 }
 
+#ifdef ENABLE_OVERCLOCK
 // delay in uS
 void delay(uint32_t data)
 {
 	volatile uint32_t count;
-	count = data * 16;
+	count = data * 7;
 	while (count--);
 }
+#else
+// delay in uS
+void delay(uint32_t data)
+{
+	volatile uint32_t count;
+	count = data * 5;
+	while (count--);
+}
+#endif
 
 void SysTick_Handler(void)
 {

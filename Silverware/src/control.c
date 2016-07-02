@@ -36,6 +36,8 @@ THE SOFTWARE.
 #include "drv_fmc.h"
 #include "flip_sequencer.h"
 #include "gestures.h"
+#include "defines.h"
+
 
 extern float rx[7];
 extern float gyro[3];
@@ -44,9 +46,6 @@ extern float pidoutput[PIDNUMBER];
 
 extern float angleerror[3];
 extern float attitude[3];
-
-extern int ledcommand;
-
 
 int onground = 1;
 float thrsum;
@@ -61,6 +60,7 @@ extern float looptime;
 extern char auxchange[AUXNUMBER];
 extern char aux[AUXNUMBER];
 
+extern int ledcommand;
 
 extern float apid(int x);
 
@@ -107,7 +107,7 @@ void control( void)
 	// check for accelerometer calibration command
 	if ( onground )
 	{
-	#ifdef GESTURES1_ENABLE
+		#ifdef GESTURES1_ENABLE
 		if ( rx[1] < -0.8  )
 		{
 			if ( !timecommand) timecommand = gettime();
@@ -115,11 +115,10 @@ void control( void)
 			{
 				// do command
 					
-			    gyro_cal();	// for flashing lights	
-					#ifndef ACRO_ONLY
+			    gyro_cal();	// for flashing lights		
+					#ifndef ACRO_ONLY				
 			    acc_cal();
-				  extern float accelcal[3];
-				  
+				  extern float accelcal[3];			  
 				  fmc_write( accelcal[0] + 127 , accelcal[1] + 127);
 				  #endif
 			    // reset loop time so max loop time is not exceeding
@@ -129,7 +128,7 @@ void control( void)
 			}		
 		}
 		else timecommand = 0;	
-		#endif
+		#endif		
 		#ifdef GESTURES2_ENABLE
 		int command = gestures2();
 
@@ -138,7 +137,6 @@ void control( void)
 		  if (command == 3)
 		    {
 			    gyro_cal();	// for flashing lights
-			    acc_cal();
 			    #ifndef ACRO_ONLY
 			    acc_cal();
 				  extern float accelcal[3];
@@ -163,7 +161,7 @@ void control( void)
 			      }
 		    }
 	  }
-		#endif
+		#endif		
 	}
 #ifndef DISABLE_HEADLESS 
 // yaw angle for headless mode	
@@ -250,6 +248,14 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 			motorfilter( 0 , i);
 			#endif
 		}	
+		
+		#ifdef USE_PWM_DRIVER
+		#ifdef MOTOR_BEEPS
+		extern void motorbeep( void);
+		motorbeep();
+		#endif
+		#endif
+		
 		onground = 1;
 		thrsum = 0;
 		
@@ -284,7 +290,16 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 
 		    }
 #endif
-		
+	
+#ifdef LVC_PREVENT_RESET
+extern float vbatt;
+if (vbatt < (float) LVC_PREVENT_RESET_VOLTAGE) 
+{
+	throttle = 0;
+}
+#endif
+
+				
 #ifdef INVERT_YAW_PID
 pidoutput[2] = -pidoutput[2];			
 #endif
@@ -317,6 +332,7 @@ thrsum = 0;
 		pwm_set( i ,motormap( mix[i] ) );
 		#else
 		// test mode
+		ledcommand = 1;
 		pwm_set( i , throttle );
 		#endif
 		#else

@@ -257,4 +257,3 @@ float atan2approx(float y, float x)
 	return RADTODEG * dphi;
 }
 
-

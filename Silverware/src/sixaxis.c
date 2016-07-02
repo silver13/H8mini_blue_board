@@ -23,29 +23,25 @@ THE SOFTWARE.
 */
 
 
-#include <inttypes.h>
+
 #include "binary.h"
 #include "sixaxis.h"
 #include "drv_time.h"
-
-
 #include "util.h"
 #include "config.h"
 #include "led.h"
-
 #include "drv_serial.h"
 
+#include "drv_i2c.h"
 
-#include "drv_softi2c.h"
-//#include "drv_i2c.h"
 
 #include <math.h>
-
-// for soft gyro filter
-extern float lpffilter( float in,int num );
+#include <stdio.h>
+#include <inttypes.h>
 
 
 #include "debug.h"
+
 extern debug_type debug;
 
 // temporary fix for compatibility between versions
@@ -67,30 +63,29 @@ void sixaxis_init( void)
 // gyro soft reset
 	
 	
-	softi2c_write( SOFTI2C_GYRO_ADDRESS , 107 , 128);
+	i2c_writereg(  107 , 128);
 	 
  delay(40000);
 	
 
 // set pll to 1, clear sleep bit old type gyro (mpu-6050)	
-	softi2c_write( SOFTI2C_GYRO_ADDRESS , 107 , 1);
+	i2c_writereg(  107 , 1);
 	
-	int newboard = !(0x68 == softi2c_read( SOFTI2C_GYRO_ADDRESS, 117));
+	int newboard = !(0x68 == i2c_readreg(117) );
 	
-	softi2c_write( SOFTI2C_GYRO_ADDRESS, 28, B00011000);	// 16G scale
+	i2c_writereg(  28, B00011000);	// 16G scale
 
 // acc lpf for the new gyro type
 //       0-6 ( same as gyro)
-	if (newboard)
-		softi2c_write( SOFTI2C_GYRO_ADDRESS, 29, ACC_LOW_PASS_FILTER);
+	if (newboard) i2c_writereg( 29, ACC_LOW_PASS_FILTER);
 	
 // gyro scale 2000 deg (FS =3)
 
-	softi2c_write( SOFTI2C_GYRO_ADDRESS , 27 , 24);
+	i2c_writereg( 27 , 24);
 	
 // Gyro DLPF low pass filter
 
-	softi2c_write( SOFTI2C_GYRO_ADDRESS , 26 , GYRO_LOW_PASS_FILTER);
+	i2c_writereg( 26 , GYRO_LOW_PASS_FILTER);
 }
 
 
@@ -98,7 +93,7 @@ int sixaxis_check( void)
 {
 	#ifndef DISABLE_GYRO_CHECK
 	// read "who am I" register
-	int id = softi2c_read( SOFTI2C_GYRO_ADDRESS, 117 );
+	int id = i2c_readreg( 117 );
 	// new board returns 78h (unknown gyro maybe mpu-6500 compatible) marked m681
 	// old board returns 68h (mpu - 6050)
 	// a new (rare) gyro marked m540 returns 7Dh
@@ -132,7 +127,7 @@ void sixaxis_read(void)
 
 	float gyronew[3];
 	
-	softi2c_readdata( SOFTI2C_GYRO_ADDRESS , 59 , data , 14 );
+	i2c_readdata( 59 , data , 14 );
 		
 	accel[0] = -(int16_t) ((data[0] << 8) + data[1]);
 	accel[1] = -(int16_t) ((data[2] << 8) + data[3]);
@@ -222,7 +217,7 @@ void gyro_read( void)
 {
 int data[6];
 	
-	softi2c_readdata( SOFTI2C_GYRO_ADDRESS , 67 , data , 6 );
+	i2c_readdata( 67 , data , 6 );
 	
 float gyronew[3];
 	// order
@@ -311,7 +306,7 @@ while ( time - timestart < CAL_TIME  &&  time - timemax < 15e6 )
 		lastlooptime = time;
 		if ( looptime == 0 ) looptime = 1;
 
-	softi2c_readdata( 0x68 , 67 , data , 6 );	
+	i2c_readdata(  67 , data , 6 );	
 
 			
 	gyro[1] = (int16_t) ((data[0]<<8) + data[1]);
@@ -322,13 +317,13 @@ while ( time - timestart < CAL_TIME  &&  time - timemax < 15e6 )
 		
 if ( (time - timestart)%200000 > 100000) 
 {
-	ledon(B00001010);
-	ledoff(B00000101);
+	ledon(B00000101);
+	ledoff(B00001010);
 }
 else 
 {
-	ledon(B00000101);
-	ledoff(B00001010);
+	ledon(B00001010);
+	ledoff(B00000101);
 }
 		
 		 for ( int i = 0 ; i < 3 ; i++)
@@ -369,7 +364,7 @@ if ( time - timestart < CAL_TIME )
 }
 
 	
-#ifdef SERIAL	
+#ifdef SERIAL_INFO	
 printf("gyro calibration  %f %f %f \n "   , gyrocal[0] , gyrocal[1] , gyrocal[2]);
 #endif
 	

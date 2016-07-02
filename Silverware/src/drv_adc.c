@@ -5,6 +5,8 @@
 
 uint16_t adcarray[2];
 
+#ifndef DISABLE_LVC
+
 void adc_init(void)
 {	 
   ADC_InitTypeDef     ADC_InitStructure;
@@ -82,3 +84,29 @@ float adc_read(int channel)
 	
 	
 }
+#else
+// // lvc disabled
+void adc_init(void)
+{
+	
+}
+// dummy function with lvc disabled
+float adc_read(int channel)
+{
+	switch(channel)
+	{
+		case 0:
+		return 4.20f;	
+		
+		case 1:
+		return adcarray[1];
+		
+		default:			
+	  return 0;
+	}
+	
+	
+}
+
+
+#endif

@@ -25,115 +25,86 @@ THE SOFTWARE.
 
 
 #include "project.h"
-#include <stdint.h>
-#include <stdio.h>
+
 
 #include "drv_i2c.h"
+#include "drv_softi2c.h"
+#include "drv_hw_i2c.h"
 
-#include "drv_time.h"
+#include "config.h"
 
-#define I2CADDRESS 0x68  
+#ifndef USE_HARDWARE_I2C
+#ifndef USE_SOFTWARE_I2C
+#ifndef USE_DUMMY_I2C
+	#define USE_SOFTWARE_I2C
+#endif
+#endif
+#endif
 
-
-#define I2C_x I2C1
+int liberror = 0;
 
 void i2c_init( void)
 {
-	// hardware i2c not functional yet
-	/*
-GPIO_InitTypeDef  GPIO_InitStructure;
-
+	#ifdef USE_HARDWARE_I2C
+	hw_i2c_init();
+	#endif
 	
-GPIO_PinAFConfig( GPIOB , EXTI_PinSource8 , GPIO_AF_1 );	
+	#ifdef USE_SOFTWARE_I2C
+	softi2c_init();
+	#endif
 	
-	
-GPIO_PinAFConfig( GPIOB , EXTI_PinSource9 , GPIO_AF_1 );
-	
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8; // i2c1 
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-
- GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; // i2c1 
- GPIO_Init(GPIOB, &GPIO_InitStructure);
-	*/
-	
-I2C_InitTypeDef  I2C_InitStructure;
-	
-	RCC_APB1PeriphClockCmd( RCC_APB1Periph_I2C1, ENABLE);
-	
-	RCC_I2CCLKConfig(RCC_I2C1CLK_HSI);
- 
-  I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
-  I2C_InitStructure.I2C_AnalogFilter = I2C_AnalogFilter_Enable;
-  I2C_InitStructure.I2C_DigitalFilter = 0x00;
-  I2C_InitStructure.I2C_OwnAddress1 = 0x00;
-  I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
-  I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-  I2C_InitStructure.I2C_Timing = 0x00210507;
- 
-  I2C_Init( I2C_x , &I2C_InitStructure);
-   
-  I2C_Cmd( I2C_x , ENABLE);
-  
+	#ifdef USE_DUMMY_I2C
+	#warning I2C FUNCTIONS DISABLED
+	#endif
 	
 }
 
-unsigned int liberror;
-
-#define I2CTIMEOUTCONDITION (i2ccount < 8092)
-//static unsigned int i2ccount = 0; 
-
-
-void i2c_sendheader()
-{
-
-}
 
 void i2c_writereg( int reg ,int data)
 {
-
+	#ifdef USE_HARDWARE_I2C
+	hw_i2c_writereg( reg , data);
+	#endif
 	
+	#ifdef USE_SOFTWARE_I2C
+	softi2c_write( SOFTI2C_GYRO_ADDRESS , reg , data);
+	#endif
 	
-}
+	#ifdef USE_DUMMY_I2C
 
-
-
-int i2c_readreg( int reg )
-{
-  int result ;
-
-	return result;
+	#endif
 }
 
 
 int i2c_readdata( int reg, int *data, int size )
 {
-
+	#ifdef USE_HARDWARE_I2C
+	return hw_i2c_readdata( reg, data, size );
+	#endif
+	
+	#ifdef USE_SOFTWARE_I2C
+	softi2c_readdata( SOFTI2C_GYRO_ADDRESS , reg , data, size );
 	return 1;
+	#endif
+	
+	#ifdef USE_DUMMY_I2C
+	return 1;
+	#endif
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int i2c_readreg( int reg )
+{
+	#ifdef USE_HARDWARE_I2C
+	return hw_i2c_readreg(reg);
+	#endif
+	
+	#ifdef USE_SOFTWARE_I2C
+	return softi2c_read( SOFTI2C_GYRO_ADDRESS , reg);
+	#endif
+	
+	#ifdef USE_DUMMY_I2C
+	return 255;
+	#endif
+}
 
 

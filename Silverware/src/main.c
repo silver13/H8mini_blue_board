@@ -48,7 +48,11 @@ THE SOFTWARE.
 
 #include "drv_softi2c.h"
 
+#include "drv_serial.h"
+
 #include "binary.h"
+
+#include <stdio.h>
 
 #include <inttypes.h>
 
@@ -96,27 +100,36 @@ extern int rxmode;
 // failsafe on / off
 extern int failsafe;
 
+float vbatt = 4.20;
+
+// for led flash on gestures
 int ledcommand = 0;
 unsigned long ledcommandtime = 0;
-
 
 void failloop( int val);
 
 int main(void)
 {
-
-	clk_init();
 	
 	delay(1000);
+
+
+#ifdef ENABLE_OVERCLOCK
+clk_init();
+#endif
 	
   gpio_init();
+
+
+	i2c_init();	
 	
-	//i2c_init();	
-	
-  softi2c_init();
 	
 	spi_init();
-delay(100000);	
+	
+  time_init();
+
+	delay(100000);
+	
 	pwm_init();
 
 	pwm_set( MOTOR_BL , 0);
@@ -124,48 +137,40 @@ delay(100000);
 	pwm_set( MOTOR_FR , 0); 
 	pwm_set( MOTOR_BR , 0); 
 
-  
-  time_init();
 
 	sixaxis_init();
 	
 	if ( sixaxis_check() ) 
 	{
-		#ifdef SERIAL	
+		#ifdef SERIAL_INFO	
 		printf( " MPU found \n" );
 		#endif
 	}
 	else 
 	{
-		#ifdef SERIAL	
+		#ifdef SERIAL_INFO	
 		printf( "ERROR: MPU NOT FOUND \n" );	
 		#endif
 		failloop(4);
 	}
 	
 	adc_init();
+//set always on channel to on
+aux[CH_ON] = 1;	
 	
+#ifdef AUX1_START_ON
+aux[CH_AUX1] = 1;
+#endif
 	rx_init();
 
 /*
-	for ( int i = 0 ; i < AUXNUMBER; i++)
-	{
-	aux[i] = 0;
-	}
-*/
-	aux[CH_ON] = 1;
-	
-#ifdef AUX1_START_ON
-	aux[CH_AUX1] = 1;
-#endif
-
 if ( RCC->CSR & 0x80000000 )
 {
 	// low power reset flag
 	// not functioning
 	failloop(3);
 }
-
+*/
 	
 int count = 0;
 	
@@ -180,13 +185,6 @@ while ( count < 64 )
  vbattfilt = vbattfilt/64;	
 // startvref = startvref/64;
 
-#ifdef SERIAL	
-		printf( "Vbatt %2.2f \n", vbattfilt );
-		#ifdef NOMOTORS
-    printf( "NO MOTORS\n" );
-		#warning "NO MOTORS"
-		#endif
-#endif
 	
 #ifdef STOP_LOWBATTERY
 // infinite loop
@@ -196,7 +194,19 @@ if ( vbattfilt < (float) STOP_LOWBATTERY_TRESH) failloop(2);
 
 
 	gyro_cal();
-		
+
+#ifdef SERIAL_ENABLE
+serial_init();
+#endif
+
+#ifdef SERIAL_INFO	
+		printf( "Vbatt %2.2f \n", vbattfilt );
+		#ifdef NOMOTORS
+    printf( "NO MOTORS\n" );
+		#warning "NO MOTORS"
+		#endif
+#endif
+
 #ifndef ACRO_ONLY
 	imu_init();
 	
@@ -212,7 +222,7 @@ extern int readdata( int datanumber);
 extern unsigned int liberror;
 if ( liberror ) 
 {
-	  #ifdef SERIAL	
+	  #ifdef SERIAL_INFO	
 		printf( "ERROR: I2C \n" );	
 		#endif
 		failloop(7);
@@ -256,23 +266,27 @@ if ( liberror )
 			// endless loop
 		}
 
-		checkrx();
 
 		#ifdef ACRO_ONLY
 		gyro_read();
 		#else		
+		TS();
 		sixaxis_read();
-		
+		TE();
 		extern void imu_calc(void);		
 		imu_calc();		
 		#endif
 
+		float battadc = adc_read(0);
+		vbatt = battadc;
+		
+// all flight calculations and motors
 		control();
 
 // battery low logic
 		
 		float hyst;
-		float battadc = adc_read(0);
+
 		// average of all 4 motor thrusts
 		// should be proportional with battery current			
 		extern float thrsum; // from control.c
@@ -324,7 +338,7 @@ else
 					ledflash ( 500000, 15);			
 				}
 			else 
-      {
+			{
 				#ifdef GESTURES2_ENABLE
 				if (ledcommand)
 						  {
@@ -339,14 +353,11 @@ else
 						  }
 						else
 					#endif // end gesture led flash
-							{
-							#ifdef LEDS_OFF
-							ledoff( 255);
-							#else
-							ledon( 255);
-							#endif 
-							}       
-      }
+				if ( aux[LEDS_ON] )
+				ledon( 255);
+				else 
+				ledoff( 255);
+			}
 		} 		
 		
 	}
@@ -364,7 +375,12 @@ else
 			else auxledoff( 255);
 		}
 #endif
+
+checkrx();
 	
+extern void osdcycle();	
+osdcycle();
+		
 // the delay is required or it becomes endless loop ( truncation in time routine)
 while ( (gettime() - time) < LOOPTIME ) delay(10); 		
 

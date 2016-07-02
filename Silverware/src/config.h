@@ -40,7 +40,7 @@
 // if STOP_LOWBATTERY is defined above
 #define STOP_LOWBATTERY_TRESH 3.3
 
-// voltage too start warning
+// voltage to start warning
 // volts
 #define VBATTLOW 3.5
 
@@ -58,11 +58,14 @@
 
 
 // Gyro LPF filter frequency
-// gyro filter 0 = 260hz
-// gyro filter 1 = 184hz
-// gyro filter 2 = 94hz
-// gyro filter 3 = 42hz
-// 4 , 5, 6
+// gyro filter 0 = 250hz delay 0.97mS
+// gyro filter 1 = 184hz delay 2.9mS
+// gyro filter 2 = 92hz delay 3.9mS
+// gyro filter 3 = 41hz delay 5.9mS (Default)
+// gyro filter 4 = 20hz
+// gyro filter 5 = 10hz
+// gyro filter 6 = 5hz
+// gyro filter 7 = 3600hz delay 0.17mS
 #define GYRO_LOW_PASS_FILTER 3
 
 
@@ -109,6 +112,8 @@
 #define LEVELMODE CH_AUX1
 
 #define STARTFLIP CH_OFF
+
+#define LEDS_ON CH_ON
 
 // Gestures enable ( gestures 1 = acc only)
 //#define GESTURES1_ENABLE
@@ -184,6 +189,14 @@
 
 
 
+// enable serial driver ( pin SWCLK after calibration) 
+// WILL DISABLE PROGRAMMING AFTER GYRO CALIBRATION - 2 - 3 seconds after powerup)
+//#define SERIAL_ENABLE
+// enable some serial info output
+//#define SERIAL_INFO
+// enable osd out
+//#define OSD_LTM_PROTOCOL
+
 // level mode "manual" trims ( in degrees)
 // pitch positive forward
 // roll positive right
@@ -218,6 +231,9 @@
 // possible values: 0 / 1
 #define ENABLESTIX 0
 
+// overclock to 64Mhz
+//#define ENABLE_OVERCLOCK
+
 
 #pragma diag_warning 1035 , 177 , 4017
 #pragma diag_error 260
@@ -231,14 +247,22 @@
 // define logic
 ///////////////
 
+
+#ifdef ENABLE_OVERCLOCK
+#define SYS_CLOCK_FREQ_HZ 64000000
+#else
+#define SYS_CLOCK_FREQ_HZ 48000000
+#endif
+
 #ifdef ACRO_ONLY
 	#define DISABLE_FLIP_SEQUENCER
 	#undef AUTO_THROTTLE
 #endif
 
 
-
-
+#ifdef OSD_LTM_PROTOCOL
+#define RXDEBUG
+#endif
 
 
 
