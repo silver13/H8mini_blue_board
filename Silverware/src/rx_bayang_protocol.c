@@ -59,17 +59,9 @@ spi_csoff();
 delay(1000);
 }
 
-int regs[32];
-
 void rx_init()
 {
 
-	for ( int i = 0 ; i < 32 ; i++)
-	{
-		regs[i] = xn_readreg(i);
-		delay(1000);
-				
-	}
 	
 /*
 uint8_t bbcal[6] = { 0x3f , 0x4c , 0x84 , 0x6F , 0x9c , 0x20  };
@@ -308,7 +300,7 @@ void checkrx( void)
 		unsigned long time = gettime();
 		
     // sequence period 12000
-		if( time - lastrxtime > 9000 && rxmode != 0)
+		if( time - lastrxtime > 13000 && rxmode != 0)
 		{//  channel with no reception	 
 		 lastrxtime = time;
 		 nextchannel();	

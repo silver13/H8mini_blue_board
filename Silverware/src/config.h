@@ -142,10 +142,12 @@
 //#define MOTOR_CURVE_85MM_8KHZ
 //#define MOTOR_CURVE_85MM_32KHZ
 
+// lost quad beeps using motors (30 sec timeout)
+//#define MOTOR_BEEPS
 
 // throttle angle compensation in level mode
 // comment out to disable
-#define AUTO_THROTTLE
+//#define AUTO_THROTTLE
 
 // build acro only firmware
 // removes the distraction of level mode for learning
@@ -167,9 +169,6 @@
 #define DISABLE_HEADLESS
 #define DISABLE_FLIP_SEQUENCER
 
-// turn leds off during flight (to save power)
-// battery low will still work
-//#define LEDS_OFF
 
 
 
@@ -219,7 +218,7 @@
 // #define SERIAL
 
 // invert yaw pid for hubsan motors
-//#define INVERT_YAW_PID
+#define INVERT_YAW_PID
 
 // debug things ( debug struct and other)
 //#define DEBUG
@@ -229,6 +228,7 @@
 
 // enable motors if pitch / roll controls off center (at zero throttle)
 // possible values: 0 / 1
+// use in acro build only
 #define ENABLESTIX 0
 
 // overclock to 64Mhz

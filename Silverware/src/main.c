@@ -270,9 +270,8 @@ if ( liberror )
 		#ifdef ACRO_ONLY
 		gyro_read();
 		#else		
-		TS();
 		sixaxis_read();
-		TE();
+		
 		extern void imu_calc(void);		
 		imu_calc();		
 		#endif

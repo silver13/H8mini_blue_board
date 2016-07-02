@@ -3,23 +3,43 @@
 #include "drv_pwm.h"
 #include "config.h"
 
-void init_timer( TIM_TypeDef* TIMx , int period);
+#ifdef USE_PWM_DRIVER
 
-TIM_OCInitTypeDef  TIM_OCInitStructure;
 
-#define PWMTOP ((48000000/PWMFREQ ) - 1)
+#ifndef SYS_CLOCK_FREQ_HZ
+#define SYS_CLOCK_FREQ_HZ 48000000
+#warning SYS_CLOCK_FREQ_HZ not present
+#endif
 
+#define PWM_DIVIDER 1
+#define PWMTOP (( SYS_CLOCK_FREQ_HZ / PWMFREQ ) - 1)
+
+// pwm frequency checking macros
 #if ( PWMTOP< 1400 ) 
+  // approx 34Khz
 	#undef PWMTOP
 	#define PWMTOP 6000
 	#warning PWM FREQUENCY TOO HIGH
 #endif
 
 #if ( PWMTOP> 65535 ) 
+// under approx 732Hz we add the divider by 4
 	#undef PWMTOP
+	#define PWMTOP (((SYS_CLOCK_FREQ_HZ/4)/PWMFREQ ) - 1)
+	#undef PWM_DIVIDER
+	#define PWM_DIVIDER 4
+	//#warning PWM DIVIDE BY 4 ON
+#endif
+
+#if ( PWMTOP> 65535 ) 
+// approx 183Hz is min frequency
+	#undef PWMTOP
+	#undef PWM_DIVIDER
 	#define PWMTOP 6000
+	#define PWM_DIVIDER 1
 	#warning PWM FREQUENCY TOO LOW
 #endif
+// end pwm frequency macros
 
 
 #ifdef PWM_PA0
@@ -201,6 +221,12 @@ TIM_OCInitTypeDef  TIM_OCInitStructure;
 
 
 #ifndef DISABLE_PWM_PINS
+
+
+void init_timer( TIM_TypeDef* TIMx , int period);
+
+TIM_OCInitTypeDef  TIM_OCInitStructure;
+
 void pwm_init(void)
 {
 	
@@ -542,7 +568,7 @@ void init_timer( TIM_TypeDef* TIMx , int period)
 {
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	
-	TIM_TimeBaseStructure.TIM_Prescaler = 0;
+	TIM_TimeBaseStructure.TIM_Prescaler = PWM_DIVIDER - 1;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_Period = period;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
@@ -551,6 +577,55 @@ void init_timer( TIM_TypeDef* TIMx , int period)
   TIM_TimeBaseInit( TIMx, &TIM_TimeBaseStructure);
 	
 }
+
+
+extern int failsafe;
+unsigned long motorbeeptime = 0;
+int beepon = 0;
+#include "drv_time.h"
+
+#ifndef MOTOR_BEEPS_TIMEOUT
+// default value if not defined elsewhere
+#define MOTOR_BEEPS_TIMEOUT 30e6
+#endif
+
+#define MOTOR_BEEPS_PWM_ON 0.2
+#define MOTOR_BEEPS_PWM_OFF 0.0
+
+void motorbeep( void)
+{
+	if (failsafe)
+	{
+		unsigned long time = gettime();
+		if (!motorbeeptime)
+				motorbeeptime = time;
+		else
+			if ( time - motorbeeptime > MOTOR_BEEPS_TIMEOUT)
+			{
+				if (!beepon&&(time%2000000 < 125000))
+				{
+				for ( int i = 0 ; i <= 3 ; i++)
+					{
+					pwm_set( i , MOTOR_BEEPS_PWM_ON);
+					beepon=1;				
+					}
+				}
+				else
+				{
+				for ( int i = 0 ; i <= 3 ; i++)
+					{
+					pwm_set( i , MOTOR_BEEPS_PWM_OFF);
+					beepon=0;				
+					}
+					
+				}
+				
+			}
+	}
+	else
+		motorbeeptime = 0;
+}
+
 
 #include  <math.h>
 
@@ -770,8 +845,8 @@ void pwm_set( uint8_t number , float pwm)
 {
 }
 
-#endif
+#endif 
 
-
+#endif // end USE_PWM_DRIVER
 
 

@@ -93,6 +93,9 @@
 #define GYRO_ID_3 0x7D
 #define GYRO_ID_4 0x68
 
+// disable lvc functions
+//#define DISABLE_LVC
+
 // Analog battery input pin and adc channel
 
 #define BATTERYPIN GPIO_Pin_5
@@ -130,6 +133,11 @@
 // PWM PINS DEFINITIONS 
 // currently pins PA0 to PA3 , PA5 , PA8 to PA11 supported
 
+// pwm driver = brushed motors
+// esc driver = servo type signal for brushless esc
+
+#define USE_PWM_DRIVER
+//#define USE_ESC_DRIVER
 
 // pwm pins disable
 // disable all pwm pins / function
@@ -192,7 +200,7 @@
 //#define MOTOR1_PIN_PB0
 //#define MOTOR1_PIN_PB1
 
-// front-right motor
+// back-right motor
 // motor 2 pin
 
 //#define MOTOR2_PIN_PA0
@@ -210,7 +218,7 @@
 //#define MOTOR2_PIN_PB0
 #define MOTOR2_PIN_PB1
 
-// back-right motor
+// front-right motor
 // motor 3 pin
 
 //#define MOTOR3_PIN_PA0

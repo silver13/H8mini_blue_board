@@ -12,6 +12,7 @@
 #define DEGTORAD 0.017453292f
 #define RADTODEG 57.29577951f
 
+#define AUXNUMBER 12
 
 #define ROLL 0
 #define PITCH 1
@@ -20,9 +21,14 @@
 #define RXMODE_BIND 0
 #define RXMODE_NORMAL (!RXMODE_BIND)
 
-
-#define AUXNUMBER 12
-
+/*
+#define CH_ON 4
+#define CH_OFF 5
+#define CH_FLIP 0
+#define CH_EXPERT 1
+#define CH_HEADFREE 2
+#define CH_RTH 3
+*/
 
 #define CH_ON (AUXNUMBER - 2)
 #define CH_OFF (AUXNUMBER - 1)
@@ -53,7 +59,7 @@
 #define CH_AUX3 CH_OFF
 #define CH_AUX4 CH_OFF
 
-
+// used for the pwm driver
 #define CH1 0
 #define CH2 1
 #define CH3 2
