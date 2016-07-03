@@ -54,6 +54,10 @@ http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Updates:
 
+###03.07.16
+* added updates from cg023 build
+* now using hardware i2c for full speed (1 Mhz)
+
 ###30.05.16
 * fixed low rates control issue in yaw+roll
 
