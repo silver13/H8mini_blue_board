@@ -45,7 +45,7 @@ THE SOFTWARE.
 
 
 // digital filter 0 - 15 ( 0 - off )
-#define HW_I2C_DIGITAL_FILTER 15
+#define HW_I2C_DIGITAL_FILTER 0
 
 
 // 100Khz (slow)
@@ -136,11 +136,10 @@ GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_1);
 GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_1);
 #endif
 
-#ifdef HW_I2C_PINS_PB910
+#ifdef HW_I2C_PINS_PA910
 GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_4);
 GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_4);
 #endif
-
 
 RCC_APB1PeriphClockCmd( RCC_APB1Periph_I2C1, ENABLE);
 
