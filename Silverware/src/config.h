@@ -218,7 +218,7 @@
 // #define SERIAL
 
 // invert yaw pid for hubsan motors
-#define INVERT_YAW_PID
+//#define INVERT_YAW_PID
 
 // debug things ( debug struct and other)
 //#define DEBUG
