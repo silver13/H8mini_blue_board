@@ -314,7 +314,7 @@ while ( time - timestart < CAL_TIME  &&  time - timemax < 15e6 )
 	gyro[2] = (int16_t) ((data[4]<<8) + data[5]);
 		
 
-		
+/*		
 if ( (time - timestart)%200000 > 100000) 
 {
 	ledon(B00000101);
@@ -325,7 +325,26 @@ else
 	ledon(B00001010);
 	ledoff(B00000101);
 }
-		
+*/		
+
+static int ledlevel = 0;
+static int loopcount = 0;
+loopcount++;
+if ( loopcount>>5 )
+{
+loopcount = 0;
+ledlevel = ledlevel + 1;
+ledlevel &=15;
+}
+if ( ledlevel > (loopcount&0xF) )
+{
+ledon( 255);
+}
+else
+{
+ledoff( 255);
+}
+
 		 for ( int i = 0 ; i < 3 ; i++)
 			{
 
@@ -337,6 +356,7 @@ else
 					if ( fabsf(gyro[i]) > 100+ fabsf(limit[i]) ) 
 					{										
 						timestart = gettime();
+						ledlevel = 1;
 					}
 					else
 					{						
