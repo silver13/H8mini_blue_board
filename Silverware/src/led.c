@@ -32,16 +32,32 @@ THE SOFTWARE.
 void ledon( uint8_t val )
 {
 #if ( LED_NUMBER > 0 )
-if ( val&1)	GPIO_SetBits( LED1PORT, LED1PIN);
+	#ifdef LED1_INVERT
+	if ( val&1) GPIO_ResetBits( LED1PORT, LED1PIN);
+	#else
+	if ( val&1)	GPIO_SetBits( LED1PORT, LED1PIN);
+	#endif
 #endif
 #if ( LED_NUMBER > 1 )
-if ( val&2)	GPIO_SetBits( LED2PORT, LED2PIN);
+	#ifdef LED2_INVERT
+  if ( val&2) GPIO_ResetBits( LED2PORT, LED2PIN);
+	#else
+	if ( val&2)	GPIO_SetBits( LED2PORT, LED2PIN);
+	#endif
 #endif
 #if ( LED_NUMBER > 2 )
-if ( val&4)	GPIO_SetBits( LED3PORT, LED3PIN);
+	#ifdef LED3_INVERT
+	if ( val&4) GPIO_ResetBits( LED3PORT, LED3PIN);
+	#else
+	if ( val&4)	GPIO_SetBits( LED3PORT, LED3PIN);
+	#endif
 #endif
 #if ( LED_NUMBER > 3 )
-if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
+	#ifdef LED4_INVERT
+	if ( val&8) GPIO_ResetBits( LED4PORT, LED4PIN);
+	#else
+	if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
+	#endif
 #endif
 			
 }
@@ -49,16 +65,32 @@ if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
 void ledoff( uint8_t val )
 {
 #if ( LED_NUMBER > 0 )	
-if ( val&1) GPIO_ResetBits( LED1PORT, LED1PIN);
+	#ifdef LED1_INVERT
+	if ( val&1)	GPIO_SetBits( LED1PORT, LED1PIN);
+	#else
+	if ( val&1) GPIO_ResetBits( LED1PORT, LED1PIN);
+	#endif
 #endif
 #if ( LED_NUMBER > 1 )
-if ( val&2) GPIO_ResetBits( LED2PORT, LED2PIN);
+	#ifdef LED2_INVERT
+	if ( val&2)	GPIO_SetBits( LED2PORT, LED2PIN);
+	#else
+	if ( val&2) GPIO_ResetBits( LED2PORT, LED2PIN);
+	#endif
 #endif
 #if ( LED_NUMBER > 2 )
-if ( val&4) GPIO_ResetBits( LED3PORT, LED3PIN);
+	#ifdef LED3_INVERT
+	if ( val&4)	GPIO_SetBits( LED3PORT, LED3PIN);
+	#else
+	if ( val&4) GPIO_ResetBits( LED3PORT, LED3PIN);
+	#endif
 #endif
 #if ( LED_NUMBER > 3 )
-if ( val&8) GPIO_ResetBits( LED4PORT, LED4PIN);	
+	#ifdef LED1_INVERT
+	if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
+	#else
+	if ( val&8) GPIO_ResetBits( LED4PORT, LED4PIN);	
+	#endif
 #endif
 }
 
@@ -66,10 +98,18 @@ void auxledon( uint8_t val )
 {
 	
 #if ( AUX_LED_NUMBER > 0 )
-if ( val&1)	GPIO_SetBits( AUX_LED1PORT, AUX_LED1PIN);
+	#ifdef AUX_LED1_INVERT
+	if ( val&1)	GPIO_ResetBits( AUX_LED1PORT, AUX_LED1PIN);
+	#else
+	if ( val&1)	GPIO_SetBits( AUX_LED1PORT, AUX_LED1PIN);
+	#endif
 #endif
 #if ( AUX_LED_NUMBER > 1 )
-if ( val&2)	GPIO_SetBits( AUX_LED2PORT, AUX_LED2PIN);
+	#ifdef AUX_LED2_INVERT
+	if ( val&2)	GPIO_ResetBits( AUX_LED2PORT, AUX_LED2PIN);
+	#else
+	if ( val&2)	GPIO_SetBits( AUX_LED2PORT, AUX_LED2PIN);
+	#endif
 #endif
 	
 }
@@ -77,10 +117,18 @@ if ( val&2)	GPIO_SetBits( AUX_LED2PORT, AUX_LED2PIN);
 void auxledoff( uint8_t val )
 {
 #if ( AUX_LED_NUMBER > 0 )
-if ( val&1) GPIO_ResetBits( AUX_LED1PORT, AUX_LED1PIN);
+	#ifdef AUX_LED1_INVERT
+	if ( val&1) GPIO_SetBits( AUX_LED1PORT, AUX_LED1PIN);
+	#else
+	if ( val&1) GPIO_ResetBits( AUX_LED1PORT, AUX_LED1PIN);
+	#endif
 #endif
 #if ( AUX_LED_NUMBER > 1 )
-if ( val&2) GPIO_ResetBits( AUX_LED2PORT, AUX_LED2PIN);	
+	#ifdef AUX_LED2_INVERT
+	if ( val&2) GPIO_SetBits( AUX_LED2PORT, AUX_LED2PIN);	
+	#else
+	if ( val&2) GPIO_ResetBits( AUX_LED2PORT, AUX_LED2PIN);	
+	#endif
 #endif
 }
 
@@ -112,6 +160,26 @@ void auxledflash( uint32_t period , int duty )
 #endif	
 }
 
+
+int ledlevel = 0;
+
+uint8_t led_pwm( uint8_t pwmval)
+{
+static int loopcount = 0;
+	
+ledlevel = pwmval;
+loopcount++;
+loopcount&=0xF;
+if ( ledlevel > loopcount )
+{
+ledon( 255);
+}
+else
+{
+ledoff( 255);
+}
+return ledlevel;
+}
 
 
 

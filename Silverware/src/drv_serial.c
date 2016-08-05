@@ -83,9 +83,24 @@ int fputc(int ch, FILE * f)
 	return ch;
 }
 
+void buffer_add(int val )
+{
+	buffer[buffer_end] = (char)val;
+	buffer_end++;
+	buffer_end = buffer_end % (SERIAL_BUFFER_SIZE);
+
+	USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
+	return;
+}
+
 #else
 // serial disabled - dummy functions
 void serial_init(void)
+{
+	
+}
+
+void buffer_add(int val )
 {
 	
 }

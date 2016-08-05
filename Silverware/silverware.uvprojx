@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>Target CG023</TargetName>
+      <TargetName>H8_blue</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
@@ -467,6 +467,11 @@
               <FileName>rx_bayang_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\rx_bayang_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>rx_bayang_protocol_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\rx_bayang_protocol_ble.c</FilePath>
             </File>
             <File>
               <FileName>rx_h7_protocol.c</FileName>

@@ -79,11 +79,24 @@ extern int acro_override;
 void control( void)
 {	
 
+	// rates / expert mode
+#define RATES CH_EXPERT
+
+float rate_multiplier = 1.0;
+	
+	if ( aux[CH_EXPERT]  )
+	{		
+		
+	}
+	else
+	{
+		rate_multiplier = 0.5f;
+	}
 	// make local copy
 	float rxcopy[4];	
-	for ( int i = 0 ; i < 4 ; i++)
+	for ( int i = 0 ; i < 3 ; i++)
 	{
-		rxcopy[i] = rx[i];
+		rxcopy[i] = rx[i] * rate_multiplier;
 	}
 
 
@@ -322,23 +335,48 @@ thrsum = 0;
 		{			
 		#ifdef MOTOR_FILTER		
 		mix[i] = motorfilter(  mix[i] , i);
-		#endif		
+		#endif	
+			
 		#ifdef CLIP_FF
 		mix[i] = clip_ff(mix[i], i);
-		#endif	
+		#endif
+
+		#ifdef MOTORS_TO_THROTTLE
+		mix[i] = throttle;
+		// flash leds in valid throttle range
+		ledcommand = 1;
+		#warning "MOTORS TEST MODE"
+		#endif
+
+		#ifdef MOTOR_MIN_ENABLE
+		if (mix[i] < (float) MOTOR_MIN_VALUE)
+		{
+			mix[i] = (float) MOTOR_MIN_VALUE;
+		}
+		#endif
+		
+		#ifdef MOTOR_MAX_ENABLE
+		if (mix[i] > (float) MOTOR_MAX_VALUE)
+		{
+			mix[i] = (float) MOTOR_MAX_VALUE;
+		}
+		#endif
+			
 		#ifndef NOMOTORS
 		#ifndef MOTORS_TO_THROTTLE
 		//normal mode
 		pwm_set( i ,motormap( mix[i] ) );
 		#else
-		// test mode
+		// throttle test mode
 		ledcommand = 1;
-		pwm_set( i , throttle );
+		pwm_set( i , mix[i] );
 		#endif
 		#else
 		// no motors mode ( anti-optimization)
+		#warning "NO MOTORS"
 		tempx[i] = motormap( mix[i] );
 		#endif
+		
 		if ( mix[i] < 0 ) mix[i] = 0;
 		if ( mix[i] > 1 ) mix[i] = 1;
 		thrsum+= mix[i];

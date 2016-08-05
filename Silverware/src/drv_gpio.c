@@ -7,15 +7,21 @@ void gpio_init(void)
 // clocks on to all ports			
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA | RCC_AHBPeriph_GPIOB | RCC_AHBENR_GPIOFEN , ENABLE);
 
-#if ( LED_NUMBER > 0|| AUX_LED_NUMBER > 0 )
   GPIO_InitTypeDef  GPIO_InitStructure;
+
 
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
+	
+	
+#ifdef ENABLE_VREG_PIN	
+	GPIO_InitStructure.GPIO_Pin = VREG_PIN_1;	
+  GPIO_Init(VREG_PORT_1, &GPIO_InitStructure); 
+	GPIO_SetBits( VREG_PORT_1, VREG_PIN_1);
 #endif
+
 	
 #if ( LED_NUMBER > 0 )
   GPIO_InitStructure.GPIO_Pin = LED1PIN;	

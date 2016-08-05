@@ -134,3 +134,77 @@ uint32_t random( void)
   return seed;
 }
 
+#ifdef SERIAL_ENABLE
+
+extern void buffer_add(int val );
+#include <stdlib.h>
+
+// print a 32bit signed int
+void print_int( int val )
+{
+// multiple of 4 or it will pad it anyway
+#define SP_INT_BUFFERSIZE 12	
+char buffer2[SP_INT_BUFFERSIZE];
+ 
+	if (val < 0) 
+	{
+		buffer_add( (char) '-' );
+		val = abs(val);
+	}
+
+int power = SP_INT_BUFFERSIZE;
+
+do
+{
+	power--;
+	int quotient = val/(10);
+	int remainder = val-quotient*10;
+	val = quotient;
+	buffer2[power] = remainder+'0';
+}	
+while (( val ) && power >=0) ;
+
+
+	for (  ; power <= SP_INT_BUFFERSIZE-1 ; power++)
+	{
+		buffer_add(buffer2[power] );
+	}
+}
+
+// print float with 2 decimal points
+// this does not handle Nans inf and values over 32bit signed int
+void print_float( float val )
+{
+
+	int ival = (int) val;
+
+	if ( val < 0 && ival == 0 ) buffer_add( (char) '-' );
+
+	print_int( ival ); 
+	
+	buffer_add( (char) '.' );
+	
+	val = val - (int) val;
+	
+	int decimals = val * 100;
+	
+	decimals = abs(decimals);
+	
+	if (decimals < 10) buffer_add( (char) '0' );
+	print_int( decimals );
+
+}
+
+void print_str(const char *str)
+{
+	int count = 0;
+	// a 64 character limit so we don't print the entire flash by mistake
+	while (str[count]&&!(count>>6) ) 
+	{
+	buffer_add( (char) str[count] );
+	count++;
+	}
+}
+
+#endif
+

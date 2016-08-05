@@ -7,7 +7,6 @@ int xn_readreg( int reg);
 void _spi_write_address( int reg, int val);
 void xn_readpayload( int *data , int size );
 void xn_writepayload( int data[] , int size );
-void xn_writerxaddress(  int *addr )	;
 void xn_writetxaddress(  int *addr )	;
 
 

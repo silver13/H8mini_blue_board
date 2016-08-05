@@ -2,10 +2,19 @@
 #include "drv_adc.h"
 #include "util.h"
 #include "config.h"
+#include "debug.h"
 
 uint16_t adcarray[2];
+extern debug_type debug;
+
 
 #ifndef DISABLE_LVC
+
+#ifndef ADC_BATT_VOLTAGE 
+#define ADC_BATT_VOLTAGE 3.77
+#undef ADC_READOUT
+#define ADC_READOUT 2727
+#endif
 
 void adc_init(void)
 {	 
@@ -73,7 +82,11 @@ float adc_read(int channel)
 	switch(channel)
 	{
 		case 0:
-		return mapf( (float) adcarray[0] , 2727.0 , 3050.0 , 3.77 , 4.22);	
+		#ifdef DEBUG
+		lpf(&debug.adcfilt , (float) adcarray[0] , 0.998);
+		#endif
+		//return mapf( (float) adcarray[0] , 2727.0 , 3050.0 , 3.77 , 4.22);	
+		return (float) adcarray[0] * ((float)(ADC_BATT_VOLTAGE)/(float) (ADC_READOUT)) ;
 		
 		case 1:
 		return adcarray[1];

@@ -11,15 +11,19 @@
 #include "config.h"
 #include "rx_bayang.h" // for struct rxdebug;
 #include <stdio.h>
-char crc;
 
-extern int fputc(int ch, FILE * f);
 
 #ifdef OSD_LTM_PROTOCOL
 
+char crc;
+
+//extern int fputc(int ch, FILE * f);
+
+extern void buffer_add(int val );
+
 void Serial_print(char ch)
 {
-	fputc( ch, NULL );
+	buffer_add( (int) ch );
 }
 
 

@@ -44,6 +44,10 @@
 #define CH_THR_TRIM 8
 #define CH_YAW_TRIM 9
 
+#define CH_INV 6
+#define CH_VID 7
+#define CH_PIC 8
+
 #define CH_CG023_LED 3
 #define CH_CG023_FLIP 0
 #define CH_CG023_STILL 2
@@ -58,6 +62,14 @@
 
 #define CH_AUX3 CH_OFF
 #define CH_AUX4 CH_OFF
+
+
+#define DEVO_CHAN_5 CH_INV
+#define DEVO_CHAN_6 CH_FLIP
+#define DEVO_CHAN_7 CH_PIC
+#define DEVO_CHAN_8 CH_VID
+#define DEVO_CHAN_9 CH_HEADFREE
+#define DEVO_CHAN_10 CH_RTH
 
 // used for the pwm driver
 #define CH1 0

@@ -87,7 +87,7 @@
 #define ACC_LOW_PASS_FILTER 5
 
 
-// channel assignments (switches)
+// switch function selection
 
 // H8 protocol channels
 // CH_FLIP - flip,  CH_HEADFREE - headfree, CH_RTH - headingreturn
@@ -101,13 +101,14 @@
 // CX10
 // CH_CX10_CH0  (unknown) , CH_CX10_CH2 ( rates mid)
 
+// DEVO channels (bayang protocol)
+// DEVO_CHAN_5 - DEVO_CHAN_10
+
 // CH_ON - on always ( all protocols)
 // CH_OFF - off always ( all protocols)
-// CH_AUX1 - gestures
-// CH_ON , CH_OFF , CH_FLIP , CH_EXPERT
-// CH_HEADFREE , CH_RTH , CH_AUX1 , CH_AUX2 , CH_AUX3 , CH_AUX4
-// CH_PIT_TRIM, CH_RLL_TRIM, CH_THR_TRIM, CH_YAW_TRIM
 #define HEADLESSMODE CH_OFF
+// rates / expert mode
+#define RATES CH_EXPERT
 
 #define LEVELMODE CH_AUX1
 
@@ -115,12 +116,12 @@
 
 #define LEDS_ON CH_ON
 
+// aux1 channel starts on if this is defined, otherwise off.
+//#define AUX1_START_ON
+
 // Gestures enable ( gestures 1 = acc only)
 //#define GESTURES1_ENABLE
 #define GESTURES2_ENABLE
-
-// aux1 channel starts on if this is defined, otherwise off.
-#define AUX1_START_ON
 
 // enable motor filter
 // hanning 3 sample fir filter
@@ -154,11 +155,11 @@
 //#define ACRO_ONLY
 
 // Radio protocol selection
-// select only one 
-//
+// select only one
 //#define RX_CG023_PROTOCOL
 //#define RX_H7_PROTOCOL
 #define RX_BAYANG_PROTOCOL
+//#define RX_BAYANG_PROTOCOL_BLE_BEACON
 //#define RX_CX10BLUE_PROTOCOL
 
 // mode 1 to mode 3 conversion
@@ -169,7 +170,9 @@
 #define DISABLE_HEADLESS
 #define DISABLE_FLIP_SEQUENCER
 
-
+// led brightness in-flight ( solid lights only)
+// 0- 15 range
+#define LED_BRIGHTNESS 15
 
 
 
@@ -206,19 +209,15 @@
 // #define NOMOTORS
 
 // throttle direct to motors for thrust measure
-//#define MOTORS_TO_THROTTLE
+// #define MOTORS_TO_THROTTLE
 
 // loop time in uS
 // this affects soft gyro lpf frequency if used
 #define LOOPTIME 1000
 
-// not available
-// enable serial out
-// 57600 default
-// #define SERIAL
 
 // invert yaw pid for hubsan motors
-// #define INVERT_YAW_PID
+//#define INVERT_YAW_PID
 
 // debug things ( debug struct and other)
 //#define DEBUG
@@ -235,6 +234,17 @@
 //#define ENABLE_OVERCLOCK
 
 
+// limit minimum motor output to a value (0.0 - 1.0)
+//#define MOTOR_MIN_ENABLE
+#define MOTOR_MIN_VALUE 0.05
+
+// limit max motor output to a value (0.0 - 1.0)
+//#define MOTOR_MAX_ENABLE
+#define MOTOR_MAX_VALUE 1.0
+
+
+
+
 #pragma diag_warning 1035 , 177 , 4017
 #pragma diag_error 260
 
@@ -244,7 +254,7 @@
 
 
 
-// define logic
+// define logic - do not change
 ///////////////
 
 
@@ -259,6 +269,11 @@
 	#undef AUTO_THROTTLE
 #endif
 
+#ifdef MOTOR_BEEPS
+ #ifdef USE_ESC_DRIVER
+ #warning "MOTOR BEEPS_WORKS WITH BRUSHED MOTORS ONLY"
+#endif
+#endif
 
 #ifdef OSD_LTM_PROTOCOL
 #define RXDEBUG

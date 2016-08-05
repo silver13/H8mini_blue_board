@@ -102,6 +102,13 @@
 #define BATTERYPORT GPIOA
 #define BATTERY_ADC_CHANNEL ADC_Channel_5
 
+// divider setting for adc uses 2 measurements
+// the adc readout can be found in debug mode , debug.adcfilt
+// #enable DEBUG should be in config.h
+// default for 1/2 divider
+#define ADC_BATT_VOLTAGE 3.67
+#define ADC_READOUT 2727.0
+
 
 // SPI PINS DEFINITONS ( for radio ic )
 // MOSI , CLK , SS - outputs , MISO input
@@ -124,9 +131,10 @@
 //spi type
 #define SOFTSPI_3WIRE
 //#define SOFTSPI_4WIRE
+
 // radio type
 #define XN297L_3WIRE
-//#define XN297
+#define RADIO_XN297L
 
 
 
@@ -245,6 +253,7 @@
 //#define SENSOR_ROTATE_90_CW
 //#define SENSOR_ROTATE_90_CCW
 #define SENSOR_ROTATE_180
+//#define SENSOR_FLIP_180
 
 
 
