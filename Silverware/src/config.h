@@ -91,6 +91,7 @@
 
 // H8 protocol channels
 // CH_FLIP - flip,  CH_HEADFREE - headfree, CH_RTH - headingreturn
+// CH_EXPERT , CH_INV (h101 tx)
 
 // cg023 protocol chanels
 // CH_CG023_FLIP , CH_CG023_VIDEO , CH_CG023_STILL , CH_CG023_LED
@@ -118,6 +119,12 @@
 
 // aux1 channel starts on if this is defined, otherwise off.
 //#define AUX1_START_ON
+
+// currently it only improves reception
+//#define USE_STOCK_TX
+
+// automatically remove center bias ( needs throttle off for 1 second )
+//#define STOCK_TX_AUTOCENTER
 
 // Gestures enable ( gestures 1 = acc only)
 //#define GESTURES1_ENABLE
@@ -257,13 +264,14 @@
 // define logic - do not change
 ///////////////
 
-
+// used for pwm calculations
 #ifdef ENABLE_OVERCLOCK
 #define SYS_CLOCK_FREQ_HZ 64000000
 #else
 #define SYS_CLOCK_FREQ_HZ 48000000
 #endif
 
+// not needed / functional without level mode
 #ifdef ACRO_ONLY
 	#define DISABLE_FLIP_SEQUENCER
 	#undef AUTO_THROTTLE
@@ -275,11 +283,15 @@
 #endif
 #endif
 
+// needed for rssi
 #ifdef OSD_LTM_PROTOCOL
 #define RXDEBUG
 #endif
 
-
+// for the ble beacon to work after in-flight reset
+#ifdef RX_BAYANG_PROTOCOL_BLE_BEACON
+#undef STOP_LOWBATTERY
+#endif
 
 
 

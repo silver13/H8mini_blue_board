@@ -69,6 +69,12 @@ extern float apid(int x);
 float tempx[4];
 #endif
 
+#ifdef STOCK_TX_AUTOCENTER
+float autocenter[3];
+float lastrx[3];
+unsigned int consecutive[3];
+#endif
+
 unsigned long timecommand = 0;
 
 extern int controls_override;
@@ -93,10 +99,17 @@ float rate_multiplier = 1.0;
 		rate_multiplier = 0.5f;
 	}
 	// make local copy
+	
+
+	
 	float rxcopy[4];	
 	for ( int i = 0 ; i < 3 ; i++)
 	{
+		#ifdef STOCK_TX_AUTOCENTER
+		rxcopy[i] = (rx[i] - autocenter[i])* rate_multiplier;
+		#else
 		rxcopy[i] = rx[i] * rate_multiplier;
+		#endif
 	}
 
 
@@ -268,6 +281,24 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 		motorbeep();
 		#endif
 		#endif
+		
+		
+		#ifdef STOCK_TX_AUTOCENTER
+		for( int i = 0 ; i <3;i++)
+			{
+				if ( rx[i] == lastrx[i] )
+					{
+						consecutive[i]++;
+						
+					}
+				else consecutive[i] = 0;
+				lastrx[i] = rx[i];
+				if ( consecutive[i] > 1000 && fabsf( rx[i]) < 0.1f )
+					{
+						autocenter[i] = rx[i];
+					}
+			}
+		#endif				
 		
 		onground = 1;
 		thrsum = 0;
