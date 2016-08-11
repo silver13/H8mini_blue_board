@@ -54,8 +54,8 @@ http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Updates:
 ###11.08.16
-*added tx autocenter for stock tx
-*added extra devo channels that were MIA
+* added tx autocenter for stock tx
+* added extra devo channels that were MIA
 
 ###03.07.16
 * added updates from cg023 build
