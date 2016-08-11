@@ -56,6 +56,7 @@ http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 ###11.08.16
 * added tx autocenter for stock tx
 * added extra devo channels that were MIA
+* bluetooth beacon was added previously
 
 ###03.07.16
 * added updates from cg023 build
