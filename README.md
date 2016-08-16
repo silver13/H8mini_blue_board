@@ -28,7 +28,7 @@ From rcg user __ketsa__
 > 
 > Replug battery, and it flashed !
 
-From rcg user __silverxxxa__
+From rcg user __silverxxx__
 > I made a blue board quad to see what's happening with the flashes.
 > 
 > So far I found out that it does indeed stop working after the st-link gets disconnected from usb.
@@ -41,13 +41,12 @@ From rcg user __silverxxxa__
 > Another find was that the nucleo built in st-link does not have this issue. It also does not get detected by the st-link firmware updater. A nucleo board is about $12
 > 
 > I'll have to find a more permanent solution, although openocd could be made a shortcut. 
-The H8 uses a stm32f030 and a XN297L 3 wire radio
 
 _The last 2 posts refer to windows and keil only_
 
 This port supports both acro only and dual mode. To enable acro only, an option exist in config.h.
 
-The H8 board - blue version - uses a stm32f030 and a XN297L 3 wire radio. The XN297L is differerent from the XN297 in that is supports 250K rate, and the dabug registers are different.  [XN297L datasheet](https://drive.google.com/file/d/0B3AKcbg1PFrnbHRXMzUzUUFmUFk/view?pref=2&pli=1) (use google translate)
+The H8 board - blue version - uses a stm32f030 and a XN297L 3 wire radio. The XN297L is differerent from the XN297 in that is supports 250K rate, and the debug registers are different.  [XN297L datasheet](https://drive.google.com/file/d/0B3AKcbg1PFrnbHRXMzUzUUFmUFk/view?pref=2&pli=1) (use google translate)
 
 ### Flashing instructions
 http://www.rcgroups.com/forums/showthread.php?t=2634611
