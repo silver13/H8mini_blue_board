@@ -1,5 +1,7 @@
 ###H8mini Blue board version###
 
+see also [http://www.rcgroups.com/forums/showthread.php?t=2721755#post35501995]
+
 From rcg user __kmtam__
 > Hi all, I finally got the h8mini blue board erased and flashed to Silverxxx firmware after zillion times of tried and error.
 > The board's labelled wrong with the CLK and DAT got swapped....
