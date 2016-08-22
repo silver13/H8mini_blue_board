@@ -81,6 +81,8 @@ extern int controls_override;
 extern float rx_override[];
 extern int acro_override;
 
+float overthrottlefilt = 0;
+float underthrottlefilt = 0;
 
 void control( void)
 {	
@@ -281,7 +283,13 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 		motorbeep();
 		#endif
 		#endif
-		
+
+
+		#ifdef MIX_LOWER_THROTTLE
+		// reset the overthrottle filter
+		lpf(&overthrottlefilt, 0.0f, 0.72f);	// 50hz 1khz sample rate
+		lpf(&underthrottlefilt, 0.0f, 0.72f);	// 50hz 1khz sample rate
+		#endif				
 		
 		#ifdef STOCK_TX_AUTOCENTER
 		for( int i = 0 ; i <3;i++)
@@ -358,7 +366,119 @@ pidoutput[2] = -pidoutput[2];
 pidoutput[2] = -pidoutput[2];			
 #endif
 	
-				
+
+#ifdef MIX_LOWER_THROTTLE
+
+//#define MIX_INCREASE_THROTTLE
+
+// options for mix throttle lowering if enabled
+// 0 - 100 range ( 100 = full reduction / 0 = no reduction )
+#ifndef MIX_THROTTLE_REDUCTION_PERCENT
+#define MIX_THROTTLE_REDUCTION_PERCENT 100
+#endif
+// lpf (exponential) shape if on, othewise linear
+//#define MIX_THROTTLE_FILTER_LPF
+
+// limit reduction and increase to this amount ( 0.0 - 1.0)
+// 0.0 = no action 
+// 0.5 = reduce up to 1/2 throttle      
+//1.0 = reduce all the way to zero 
+#ifndef MIX_THROTTLE_REDUCTION_MAX
+#define MIX_THROTTLE_REDUCTION_MAX 0.5
+#endif
+
+#ifndef MIX_MOTOR_MAX
+#define MIX_MOTOR_MAX 1.0f
+#endif
+
+
+		  float overthrottle = 0;
+			float underthrottle = 0.001f;
+		
+		  for (int i = 0; i < 4; i++)
+		    {
+			    if (mix[i] > overthrottle)
+				    overthrottle = mix[i];
+					if (mix[i] < underthrottle)
+						underthrottle = mix[i];
+		    }
+
+		  overthrottle -= MIX_MOTOR_MAX ;
+
+		  if (overthrottle > (float)MIX_THROTTLE_REDUCTION_MAX)
+			  overthrottle = (float)MIX_THROTTLE_REDUCTION_MAX;
+
+#ifdef MIX_THROTTLE_FILTER_LPF
+		  if (overthrottle > overthrottlefilt)
+			  lpf(&overthrottlefilt, overthrottle, 0.82);	// 20hz 1khz sample rate
+		  else
+			  lpf(&overthrottlefilt, overthrottle, 0.72);	// 50hz 1khz sample rate
+#else
+		  if (overthrottle > overthrottlefilt)
+			  overthrottlefilt += 0.005f;
+		  else
+			  overthrottlefilt -= 0.01f;
+#endif
+			
+#ifdef MIX_INCREASE_THROTTLE
+// under			
+			
+		  if (underthrottle < -(float)MIX_THROTTLE_REDUCTION_MAX)
+			  underthrottle = -(float)MIX_THROTTLE_REDUCTION_MAX;
+			
+#ifdef MIX_THROTTLE_FILTER_LPF
+		  if (underthrottle < underthrottlefilt)
+			  lpf(&underthrottlefilt, underthrottle, 0.82);	// 20hz 1khz sample rate
+		  else
+			  lpf(&underthrottlefilt, underthrottle, 0.72);	// 50hz 1khz sample rate
+#else
+		  if (underthrottle < underthrottlefilt)
+			  underthrottlefilt += 0.005f;
+		  else
+			  underthrottlefilt -= 0.01f;
+#endif
+// under
+			if (underthrottlefilt < - (float)MIX_THROTTLE_REDUCTION_MAX)
+			  underthrottlefilt = - (float)MIX_THROTTLE_REDUCTION_MAX;
+		  if (underthrottlefilt > 0.1f)
+			  underthrottlefilt = 0.1;
+
+			underthrottle = underthrottlefilt;
+					
+			if (underthrottle > 0.0f)
+			  underthrottle = 0.0001f;
+
+			underthrottle *= ((float)MIX_THROTTLE_REDUCTION_PERCENT / 100.0f);
+			
+#endif			
+// over			
+		  if (overthrottlefilt > (float)MIX_THROTTLE_REDUCTION_MAX)
+			  overthrottlefilt = (float)MIX_THROTTLE_REDUCTION_MAX;
+		  if (overthrottlefilt < -0.1f)
+			  overthrottlefilt = -0.1;
+
+
+		  overthrottle = overthrottlefilt;
+
+			
+		  if (overthrottle < 0.0f)
+			  overthrottle = -0.0001f;
+
+			
+			// reduce by a percentage only, so we get an inbetween performance
+			overthrottle *= ((float)MIX_THROTTLE_REDUCTION_PERCENT / 100.0f);
+
+			
+			
+		  if (overthrottle > 0 || underthrottle < 0 )
+		    {		// exceeding max motor thrust
+					float temp = overthrottle + underthrottle;
+			    for (int i = 0; i < 4; i++)
+			      {
+				      mix[i] -= temp;
+			      }
+		    }
+#endif				
 
 thrsum = 0;		
 				

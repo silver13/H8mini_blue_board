@@ -110,7 +110,6 @@ void vectorcopy(float *vector1, float *vector2)
 	  }
 }
 
-float offset[3];
 
 void imu_calc(void)
 {
@@ -142,7 +141,7 @@ void imu_calc(void)
 
 	for ( int i = 0 ; i < 3 ; i++)
 	{
-	deltaGyroAngle[i] = (gyro[i]) * deltatime + offset[i];
+	deltaGyroAngle[i] = (gyro[i]) * deltatime;
 	}
 	
 	

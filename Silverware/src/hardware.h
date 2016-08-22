@@ -68,7 +68,7 @@
 #define SOFTI2C_SPEED_SLOW1
 //#define SOFTI2C_SPEED_SLOW2
 
-//  hardware i2c speed ( 1000, 400 , 200 , 100Khz)
+// hardware i2c speed ( 1000, 400 , 200 , 100Khz)
 #define HW_I2C_SPEED_FAST2
 //#define HW_I2C_SPEED_FAST
 //#define HW_I2C_SPEED_SLOW1
@@ -91,7 +91,7 @@
 #define GYRO_ID_1 0x68
 #define GYRO_ID_2 0x78
 #define GYRO_ID_3 0x7D
-#define GYRO_ID_4 0x68
+#define GYRO_ID_4 0x72
 
 // disable lvc functions
 //#define DISABLE_LVC
@@ -131,6 +131,10 @@
 //spi type
 #define SOFTSPI_3WIRE
 //#define SOFTSPI_4WIRE
+
+// check for radio chip ( 3 times flash = not found)
+#define RADIO_CHECK
+
 
 // radio type
 #define XN297L_3WIRE
@@ -250,6 +254,8 @@
 // gyro orientation
 // the expected orientation is with the dot in the front-left corner
 // use this to rotate to the correct orientation 
+// rotations performed in order
+//#define SENSOR_ROTATE_45_CCW
 //#define SENSOR_ROTATE_90_CW
 //#define SENSOR_ROTATE_90_CCW
 #define SENSOR_ROTATE_180

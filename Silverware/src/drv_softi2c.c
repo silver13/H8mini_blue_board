@@ -41,7 +41,7 @@ void delay(int);
 #ifndef SOFTI2C_SPEED_SLOW1
 #ifndef SOFTI2C_SPEED_SLOW2
 #ifndef SOFTI2C_SPEED_FAST
-#define SOFTI2C_SPEED_FAST
+	#define SOFTI2C_SPEED_FAST
 #endif
 #endif
 #endif
@@ -52,7 +52,6 @@ void delay(int);
 #endif
 
 #ifdef SOFTI2C_SPEED_SLOW1
-
 #ifdef __GNUC__
 void delayraw()
 {
@@ -66,7 +65,6 @@ void delayraw()
 	while (count--);
 }
 #endif
-
 #define _delay  delayraw()
 #define _delay2 //delay(1)
 #endif
@@ -80,7 +78,6 @@ void delayraw()
 	int debug = 1;   		// prints error info, set in setup()
 	#endif
 	
-	int error1;
 	int sda;
 	int scl;	
 	
@@ -91,8 +88,8 @@ void delayraw()
 	void scllow(void);
 	void sclhigh(void);
 	void _restart(void);	
-	uint8_t _readbyte( uint8_t); 
-	uint8_t _sendbyte( uint8_t);
+	int _readbyte( int); 
+	int _sendbyte( int);
 	int _readsda(void);
 	
 	int sdaout = 0;
@@ -187,7 +184,7 @@ void _sendstart()
 	#ifdef i2cdebug
 	printf("_sendstart: sda pulled low by slave"); 
 	#endif
-	error1 = 1;
+	//error1 = 1;
 	}
   sdalow();
 }
@@ -236,7 +233,7 @@ void _sendstop()
 
 
 
-uint8_t _sendbyte( uint8_t value )
+int _sendbyte( int value )
 {
 int i;
  if (scl == 1) 
@@ -275,7 +272,7 @@ int i;
 return ack; 
 }
 
-uint8_t _readbyte(uint8_t ack)  //ACK 1 single byte ACK 0 multiple bytes
+int _readbyte(int ack)  //ACK 1 single byte ACK 0 multiple bytes
 {
  uint8_t data=0;
 #ifdef i2cdebug
@@ -313,7 +310,7 @@ return data;
 }
 
 
-uint8_t softi2c_write( uint8_t device_address , uint8_t address,uint8_t value)
+int softi2c_write( int device_address , int address, int value)
 {
  _sendstart();
  _sendbyte((device_address<<1));
@@ -324,7 +321,7 @@ uint8_t softi2c_write( uint8_t device_address , uint8_t address,uint8_t value)
 }
 
 
-uint8_t softi2c_read(uint8_t device_address , uint8_t register_address)  
+int softi2c_read(int device_address , int register_address)  
 {
  _sendstart();
  _sendbyte((device_address<<1));
@@ -337,7 +334,7 @@ uint8_t softi2c_read(uint8_t device_address , uint8_t register_address)
 }
 
 
-void softi2c_writedata(uint8_t device_address ,uint8_t register_address , int *data, int size ) 
+void softi2c_writedata(int device_address ,int register_address , int *data, int size ) 
 {
 	int index = 0;
  _sendstart();
@@ -356,7 +353,7 @@ void softi2c_writedata(uint8_t device_address ,uint8_t register_address , int *d
 }
 
 
-void softi2c_readdata(uint8_t device_address ,uint8_t register_address , int *data, int size ) 
+void softi2c_readdata(int device_address ,int register_address , int *data, int size ) 
 {
 	int index = 0;
  _sendstart();
@@ -408,12 +405,7 @@ sclhigh();
 	
 }
 
-uint8_t i2c_error()
-{
-uint8_t errora = error1;
-error1 = 0;
-return errora;
-}
+
 
 
 

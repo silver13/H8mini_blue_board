@@ -353,7 +353,11 @@ else
 						else
 					#endif // end gesture led flash
 				if ( aux[LEDS_ON] )
+				#if( LED_BRIGHTNESS != 15)	
 				led_pwm(LED_BRIGHTNESS);
+				#else
+				ledon( 255);
+				#endif
 				else 
 				ledoff( 255);
 			}

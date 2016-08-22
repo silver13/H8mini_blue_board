@@ -56,6 +56,13 @@
 
 
 
+// lower throttle when battery below treshold
+//#define LVC_PREVENT_RESET
+
+// threshold for above (volts)
+#define LVC_PREVENT_RESET_VOLTAGE 2.85
+
+
 
 // Gyro LPF filter frequency
 // gyro filter 0 = 250hz delay 0.97mS
@@ -107,6 +114,7 @@
 
 // CH_ON - on always ( all protocols)
 // CH_OFF - off always ( all protocols)
+
 #define HEADLESSMODE CH_OFF
 // rates / expert mode
 #define RATES CH_EXPERT
@@ -116,6 +124,8 @@
 #define STARTFLIP CH_OFF
 
 #define LEDS_ON CH_ON
+
+
 
 // aux1 channel starts on if this is defined, otherwise off.
 //#define AUX1_START_ON

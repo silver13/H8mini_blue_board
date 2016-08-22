@@ -163,7 +163,7 @@ void auxledflash( uint32_t period , int duty )
 
 int ledlevel = 0;
 
-uint8_t led_pwm( uint8_t pwmval)
+uint8_t led_pwm2( uint8_t pwmval)
 {
 static int loopcount = 0;
 	
@@ -181,7 +181,56 @@ ledoff( 255);
 return ledlevel;
 }
 
+int ledlevel2 = 0;
+unsigned long lastledtime;
+float lastledbrightness = 0;
 
+//#define DEBUG
+
+#ifdef DEBUG
+int debug_led;
+#endif
+
+#include "util.h"
+
+// delta- sigma first order modulator.
+uint8_t led_pwm( uint8_t pwmval)
+{
+	static float ds_integrator= 0;
+	unsigned int time = gettime();
+	unsigned int ledtime = time - lastledtime; 
+
+	lastledtime = time;
+
+	
+	float desiredbrightness = pwmval*( 1.0f/ 15.0f);
+
+//	limitf( &lastledbrightness, 2);
+
+	limitf( &ds_integrator, 2);
+	
+	ds_integrator += (desiredbrightness - lastledbrightness)*ledtime* ( 1.0f  /(float) LOOPTIME);
+	
+	if ( ds_integrator > 0.49f ) 
+		{
+		ledon( 255);
+			lastledbrightness = 1.0f;
+			#ifdef DEBUG
+			debug_led<<=1;
+			debug_led|=1;
+			#endif
+		}
+		else
+		{
+		ledoff( 255);
+			lastledbrightness = 0;
+			#ifdef DEBUG
+			debug_led<<=1;
+			debug_led&=0xFFFFFFFE;
+			#endif
+		}	
+return 0;	
+}
 
 
 
