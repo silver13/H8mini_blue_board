@@ -32,7 +32,6 @@ int main()
 }
 */
 
-#pragma once
 
 #define B00000000 0
 #define B00000001 1

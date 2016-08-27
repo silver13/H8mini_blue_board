@@ -30,13 +30,15 @@ CFLAGS = $(MCFLAGS)  $(OPTIMIZE)  $(DEFS) -I. -I./ $(INCLUDES)  -Wl,-T,flash.ld,
 AFLAGS = $(MCFLAGS)
 
 SRC = $(wildcard $(topdir)/Silverware/src/*.c) \
-	$(wildcard $(topdir)/Silverware/src/config.h) \
+	$(wildcard $(topdir)/Silverware/src/*.h) \
 	$(topdir)/Libraries/STM32F0xx_StdPeriph_Driver/src/*.c  \
 	$(topdir)/Utilities/system_stm32f0xx.c \
 	methods.c
 
 OBJDIR = .
-OBJ = $(SRC:%.c=$(OBJDIR)/%.o)
+OBJ = $(patsubst %.c,$(OBJDIR)/%.o,$(filter %.c,$(SRC)))
+OBJ += $(patsubst %.cpp,$(OBJDIR)/%.o,$(filter %.cpp,$(SRC)))
+OBJ += Startup.o
 
 
 all: $(TARGET)
