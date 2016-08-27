@@ -61,3 +61,19 @@ Once the board is unlocked, the firmware can be flashed using
 ```
 openocd -f /usr/share/openocd/scripts/interface/stlink-v2.cfg -f /usr/share/openocd/scripts/target/stm32f0x.cfg -c init -c "reset halt" -c "flash write_image erase h8blue 0x08000000" -c "verify_image h8blue 0x08000000" -c "reset run" -c shutdown
 ```
+
+## Troubleshooting
+
+It appears that on Ubuntu 14.04, there is an issue with the standard .deb install for the build toolchain. You might get an error saying
+```
+arm-none-eabi-gcc: error: nano.specs: No such file or directory
+```
+In that case, another version of the ggc arm toolchain needs to be installed (see bug reports: [1](https://bugs.launchpad.net/gcc-arm-embedded/+bug/1309060), [2](https://bugs.launchpad.net/gcc-arm-embedded/+bug/1309060)):
+```
+sudo apt-get remove binutils-arm-none-eabi gcc-arm-none-eabi
+sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded
+sudo apt-get update
+sudo apt-get install gcc-arm-none-eabi 
+```
+After this, the "Build the firmware" step above can be performed.
+
