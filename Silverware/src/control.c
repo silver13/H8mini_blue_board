@@ -48,6 +48,8 @@ extern float angleerror[3];
 extern float attitude[3];
 
 int onground = 1;
+int onground_long = 1;
+
 float thrsum;
 
 float error[PIDNUMBER];
@@ -265,9 +267,17 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 
 
 // turn motors off if throttle is off and pitch / roll sticks are centered
-	if ( failsafe || (throttle < 0.001f && (!ENABLESTIX||  (fabsf(rx[ROLL]) < 0.5f && fabsf(rx[PITCH]) < 0.5f ) ) ) ) 
+	if ( failsafe || (throttle < 0.001f && (!ENABLESTIX || !onground_long || aux[LEVELMODE] || (fabsf(rx[ROLL]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[PITCH]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[YAW]) < (float) ENABLESTIX_TRESHOLD ) ) ) ) 
+	{	// motors off
 
-	{ // motors off
+		if ( onground_long )
+		{
+			if ( gettime() - onground_long > ENABLESTIX_TIMEOUT)
+			{
+				onground_long = 0;
+			}
+		}	
+		
 		for ( int i = 0 ; i <= 3 ; i++)
 		{
 			pwm_set( i , 0 );	
@@ -313,8 +323,11 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 		
 	}
 	else
-	{
+	{// motors on - normal flight
+		
 		onground = 0;
+		onground_long = gettime();
+		
 		float mix[4];	
 		
 	if ( controls_override)

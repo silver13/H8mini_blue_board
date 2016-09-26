@@ -128,7 +128,7 @@
 
 
 // aux1 channel starts on if this is defined, otherwise off.
-//#define AUX1_START_ON
+#define AUX1_START_ON
 
 // currently it only improves reception
 //#define USE_STOCK_TX
@@ -201,7 +201,6 @@
 
 
 
-
 //##################################
 // debug / other things
 // this should not be usually changed
@@ -232,7 +231,6 @@
 // this affects soft gyro lpf frequency if used
 #define LOOPTIME 1000
 
-
 // invert yaw pid for hubsan motors
 //#define INVERT_YAW_PID
 
@@ -246,6 +244,8 @@
 // possible values: 0 / 1
 // use in acro build only
 #define ENABLESTIX 0
+#define ENABLESTIX_TRESHOLD 0.3
+#define ENABLESTIX_TIMEOUT 1e6
 
 // overclock to 64Mhz
 //#define ENABLE_OVERCLOCK
