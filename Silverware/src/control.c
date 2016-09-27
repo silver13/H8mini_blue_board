@@ -220,13 +220,29 @@ pid_precalc();
 	// dual mode build
 	if (aux[LEVELMODE]&&!acro_override)
 	  {			// level mode
+		extern	void stick_vector( float);
+		extern float errorvect[];	
+		float yawerror[3];
+			
+		stick_vector( 0 );
+			
+			extern float GEstG[3];
+		
+			float yawrate = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD;
+			
+			yawerror[0] = GEstG[1] * yawrate;
+			yawerror[1] = - GEstG[0] * yawrate;
+			yawerror[2] = GEstG[2] * yawrate;
 
-		  angleerror[0] = rxcopy[0] * MAX_ANGLE_HI - attitude[0] + (float) TRIM_ROLL;
-		  angleerror[1] = rxcopy[1] * MAX_ANGLE_HI - attitude[1] + (float) TRIM_PITCH;
-
-		  error[0] = apid(0)  - gyro[0];
-		  error[1] = apid(1)  - gyro[1];
-
+	  angleerror[0] = errorvect[0] * RADTODEG;// - attitude[0] + (float) TRIM_ROLL;
+		angleerror[1] = errorvect[1] * RADTODEG;// - attitude[1] + (float) TRIM_PITCH;
+			
+		for ( int i = 0 ; i <2; i++)
+			{
+			error[i] = apid(i) + yawerror[i] - gyro[i];
+			}
+			
+		error[2] = yawerror[2]  - gyro[2];
 	  }
 	else
 	  {	// rate mode
@@ -234,14 +250,14 @@ pid_precalc();
 		  error[0] = rxcopy[0] * (float) MAX_RATE * DEGTORAD  - gyro[0];
 		  error[1] = rxcopy[1] * (float) MAX_RATE * DEGTORAD  - gyro[1];
 
+			error[2] = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD  - gyro[2];
+			
 		  // reduce angle Iterm towards zero
 		  extern float aierror[3];
-		  for (int i = 0; i <= 2; i++)
+		  for (int i = 0; i <= 1; i++)
 			  aierror[i] *= 0.8f;
 	  }
 
-
-	error[2] = rxcopy[2] * (float) MAX_RATEYAW * DEGTORAD  - gyro[2];
 
 	pid(0);
 	pid(1);
@@ -252,7 +268,6 @@ pid_precalc();
 	error[PITCH] = rxcopy[PITCH] * (float) MAX_RATE * DEGTORAD  - gyro[PITCH];
 	error[YAW] = rxcopy[YAW] * (float) MAX_RATEYAW * DEGTORAD  - gyro[YAW];
 	
-pid_precalc();
 
 	pid(ROLL);
 	pid(PITCH);
@@ -293,7 +308,6 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 		motorbeep();
 		#endif
 		#endif
-
 
 		#ifdef MIX_LOWER_THROTTLE
 		// reset the overthrottle filter
@@ -340,8 +354,10 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 #ifdef AUTO_THROTTLE
 		  if (aux[LEVELMODE])
 		    {
-			    float autothrottle = fastcos(attitude[0] * DEGTORAD) * fastcos(attitude[1] * DEGTORAD);
-			    float old_throttle = throttle;
+			    //float autothrottle = fastcos(attitude[0] * DEGTORAD) * fastcos(attitude[1] * DEGTORAD);
+			    extern float GEstG[];
+				float autothrottle = GEstG[2];
+				float old_throttle = throttle;
 			    if (autothrottle <= 0.5f)
 				    autothrottle = 0.5f;
 			    throttle = throttle / autothrottle;
@@ -446,9 +462,9 @@ pidoutput[2] = -pidoutput[2];
 			  lpf(&underthrottlefilt, underthrottle, 0.72);	// 50hz 1khz sample rate
 #else
 		  if (underthrottle < underthrottlefilt)
-			  underthrottlefilt += 0.005f;
+			  underthrottlefilt -= 0.005f;
 		  else
-			  underthrottlefilt -= 0.01f;
+			  underthrottlefilt += 0.01f;
 #endif
 // under
 			if (underthrottlefilt < - (float)MIX_THROTTLE_REDUCTION_MAX)

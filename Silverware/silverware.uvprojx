@@ -417,7 +417,7 @@
                 <vShortEn>2</vShortEn>
                 <vShortWch>2</vShortWch>
                 <v6Lto>0</v6Lto>
-                <v6WtE>0</v6WtE>
+                <v6WtE>2</v6WtE>
                 <v6Rtti>2</v6Rtti>
                 <VariousControls>
                   <MiscControls></MiscControls>
@@ -456,6 +456,11 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\buzzer.c</FilePath>
             </File>
             <File>
               <FileName>gestures.c</FileName>
@@ -511,6 +516,11 @@
               <FileName>util.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\util.c</FilePath>
+            </File>
+            <File>
+              <FileName>stickvector.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\stickvector.c</FilePath>
             </File>
             <File>
               <FileName>imu.c</FileName>
