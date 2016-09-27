@@ -12,6 +12,9 @@
 // max angle for level mode
 #define MAX_ANGLE_HI 55.0f
 
+// max rate used by level pid ( limit )
+#define LEVEL_MAX_RATE 2000
+
 // disable inbuilt expo functions
 #define DISABLE_EXPO
 
@@ -22,6 +25,10 @@
 #define EXPO_XY 0.3
 #define EXPO_YAW 0.0
 
+
+
+// failsafe time in uS
+#define FAILSAFETIME 1000000  // one second
 
 
 // battery saver
@@ -186,7 +193,6 @@
 
 
 
-//#define BUZZER_ENABLE
 
 
 
@@ -224,12 +230,6 @@
 // loop time in uS
 // this affects soft gyro lpf frequency if used
 #define LOOPTIME 1000
-
-// failsafe time in uS
-#define FAILSAFETIME 1000000  // one second
-
-// max rate used by level pid ( limit )
-#define LEVEL_MAX_RATE 360
 
 // invert yaw pid for hubsan motors
 //#define INVERT_YAW_PID

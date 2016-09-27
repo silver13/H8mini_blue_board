@@ -19,7 +19,8 @@
 extern debug_type debug;
 #endif
 
-#define ACC_1G 1.0f
+
+#define ACC_1G 2048.0f
 
 // disable drift correction ( for testing)
 #define DISABLE_ACC 0
@@ -52,7 +53,7 @@ void imu_init(void)
 
 		  for (int x = 0; x < 3; x++)
 		    {
-			    lpf(&GEstG[x], accel[x]* ( 1/ 2048.0f) , 0.85);
+			    lpf(&GEstG[x], accel[x], 0.85);
 		    }
 		  delay(1000);
 
@@ -134,13 +135,6 @@ void imu_calc(void)
 // remove bias
   accel[0] = accel[0] - accelcal[0];
 	accel[1] = accel[1] - accelcal[1];
-
-
-// reduce to accel in G
-for (int i = 0; i < 3; i++)
-	  {
-		  accel[i] *= ( 1/ 2048.0f);
-	  }
 	
 
 	float deltaGyroAngle[3];
@@ -220,11 +214,11 @@ for (int i = 0; i < 3; i++)
 	  }
 
 	vectorcopy(&GEstG[0], &EstG[0]);
-#ifdef DEBUG
+
 	attitude[0] = atan2approx(EstG[0], EstG[2]) ;
 
 	attitude[1] = atan2approx(EstG[1], EstG[2])  ;
-#endif
+
 }
 
 
