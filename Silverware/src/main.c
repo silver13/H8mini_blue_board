@@ -378,6 +378,10 @@ else
 		}
 #endif
 
+#ifdef BUZZER_ENABLE
+	buzzer();
+#endif
+
 checkrx();
 	
 extern void osdcycle();	
