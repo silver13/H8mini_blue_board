@@ -92,6 +92,7 @@
 // H8 protocol channels
 // CH_FLIP - flip,  CH_HEADFREE - headfree, CH_RTH - headingreturn
 // CH_EXPERT , CH_INV (h101 tx)
+// CH_RLL_TRIM , CH_PIT_TRIM - trim buttons pitch, roll
 
 // cg023 protocol chanels
 // CH_CG023_FLIP , CH_CG023_VIDEO , CH_CG023_STILL , CH_CG023_LED
@@ -123,7 +124,8 @@
 // aux1 channel starts on if this is defined, otherwise off.
 #define AUX1_START_ON
 
-// currently it only improves reception
+// improves reception and enables trims if used
+// trims are incompatible with DEVO TX when used
 //#define USE_STOCK_TX
 
 // automatically remove center bias ( needs throttle off for 1 second )
