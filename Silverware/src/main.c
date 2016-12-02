@@ -52,7 +52,7 @@ THE SOFTWARE.
 #include "binary.h"
 
 #include <stdio.h>
-
+#include <math.h>
 #include <inttypes.h>
 
 
@@ -60,6 +60,14 @@ THE SOFTWARE.
 #ifdef DEBUG
 #include "debug.h"
 debug_type debug;
+#endif
+
+
+
+#ifdef __GNUC__
+// gcc warnings and fixes
+#undef AUTO_VDROP_FACTOR
+#warning #define AUTO_VDROP_FACTOR not working with gcc, using fixed factor
 #endif
 
 
@@ -74,15 +82,14 @@ void imu_init(void);
 float looptime;
 // filtered battery in volts
 float vbattfilt = 0.0;
+float vbatt = 4.2;
+float vbatt_comp = 4.2;
 
 unsigned int lastlooptime;
 // signal for lowbattery
 int lowbatt = 1;	
 // signal for lowbattery second threshold
 int lowbatt2 = 1;
-
-//float vref = 1.0;
-//float startvref;
 
 // holds the main four channels, roll, pitch , yaw , throttle
 float rx[4];
@@ -99,7 +106,6 @@ extern int rxmode;
 // failsafe on / off
 extern int failsafe;
 
-float vbatt = 4.20;
 
 // for led flash on gestures
 int ledcommand = 0;
@@ -299,27 +305,63 @@ if ( liberror )
 		
 		lpf ( &vbattfilt , battadc , 0.9968f);		
 
+
+#ifdef AUTO_VDROP_FACTOR
+
+static float lastout[12];
+static float lastin[12];
+static float vcomp[12];
+static float score[12];
+static int current_index = 0;
+
+int minindex = 0;
+float min = score[0];
+
+{
+	int i = current_index;
+
+	vcomp[i] = vbattfilt + (float) i *0.1f * thrfilt;
+		
+	if ( lastin[i] < 0.1f ) lastin[i] = vcomp[i];
+	float temp;
+	//	y(n) = x(n) - x(n-1) + R * y(n-1) 
+	//  out = in - lastin + coeff*lastout
+		// hpf
+	 temp = vcomp[i] - lastin[i] + FILTERCALC( 1000*12 , 1000e3) *lastout[i];
+		lastin[i] = vcomp[i];
+		lastout[i] = temp;
+	 lpf ( &score[i] , fabsf(temp) , FILTERCALC( 1000*12 , 10e6 ) );
+
+	}
+	current_index++;
+	if ( current_index >= 12 ) current_index = 0;
+
+	for ( int i = 0 ; i < 12; i++ )
+	{
+	 if ( score[i] < min )  
+		{
+			min = score[i];
+			minindex = i;
+		}
+}
+
+#undef VDROP_FACTOR
+#define VDROP_FACTOR  minindex * 0.1f
+#endif
+
 		if ( lowbatt ) hyst = HYST;
 		else hyst = 0.0f;
-
-		float batt_compensated = vbattfilt + (float) VDROP_FACTOR * thrfilt;
-#ifdef DEBUG
-		debug.vbatt_comp = batt_compensated ;
-#endif		
-		if ( batt_compensated <(float) VBATTLOW + hyst ) lowbatt = 1;
+		
+		if ( vbattfilt + (float) VDROP_FACTOR * thrfilt <(float) VBATTLOW + hyst ) lowbatt = 1;
 		else lowbatt = 0;
-		
-#if ( AUX_LED_NUMBER > 0)
-// lowbatt 2 ( 0.2V lower )
 
-		float hyst2;
-		if ( lowbatt2 ) hyst2 = HYST;
-		else hyst2 = 0.0f;
-		
-		if ( batt_compensated < ( (float)VBATTLOW + hyst2 - 0.2f ) ) lowbatt2 = 1;
-		else lowbatt2 = 0;
-		
+	vbatt_comp = vbattfilt + (float) VDROP_FACTOR * thrfilt; 	
+
+#ifdef DEBUG
+		debug.vbatt_comp = vbatt_comp ;
 #endif		
+	
+
 #if ( LED_NUMBER > 0)
 // led flash logic	
 if ( lowbatt )

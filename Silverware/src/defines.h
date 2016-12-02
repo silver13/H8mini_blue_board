@@ -18,6 +18,10 @@
 #define PITCH 1
 #define YAW 2
 
+
+#define FILTERCALC( sampleperiod, filtertime) (1.0f - ((float)sampleperiod) / ((float)filtertime))
+
+
 #define RXMODE_BIND 0
 #define RXMODE_NORMAL (!RXMODE_BIND)
 

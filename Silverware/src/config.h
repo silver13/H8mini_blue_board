@@ -43,6 +43,8 @@
 // in volts
 #define VDROP_FACTOR 0.7
 
+#define AUTO_VDROP_FACTOR
+
 // voltage hysteresys
 // in volts
 #define HYST 0.10
@@ -170,13 +172,14 @@
 // select only one
 //#define RX_CG023_PROTOCOL
 //#define RX_H7_PROTOCOL
-#define RX_BAYANG_PROTOCOL
+//#define RX_BAYANG_PROTOCOL
+#define RX_BAYANG_PROTOCOL_TELEMETRY
 //#define RX_BAYANG_PROTOCOL_BLE_BEACON
 //#define RX_CX10BLUE_PROTOCOL
 
-// mode 1 to mode 3 conversion
-// cg023 protocol
-//#define RX_CG023_SWAP_YAWROLL
+// 0 - 7 - power for telemetry
+#define TX_POWER 0
+
 
 // Flash saving features
 #define DISABLE_HEADLESS
