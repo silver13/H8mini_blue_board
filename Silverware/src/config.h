@@ -93,7 +93,7 @@
 
 // H8 protocol channels
 // CH_FLIP - flip,  CH_HEADFREE - headfree, CH_RTH - headingreturn
-// CH_EXPERT , CH_INV (h101 tx)
+// CH_EXPERT , CH_INV (inv h101 tx)
 // CH_RLL_TRIM , CH_PIT_TRIM - trim buttons pitch, roll
 
 // cg023 protocol chanels
@@ -107,6 +107,8 @@
 
 // DEVO channels (bayang protocol)
 // DEVO_CHAN_5 - DEVO_CHAN_10
+
+// Multiprotocol can use MULTI_CHAN_5 - MULTI_CHAN_10  (bayang protocol)
 
 // CH_ON - on always ( all protocols)
 // CH_OFF - off always ( all protocols)

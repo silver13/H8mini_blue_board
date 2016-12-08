@@ -66,10 +66,11 @@ debug_type debug;
 
 #ifdef __GNUC__
 // gcc warnings and fixes
+#ifdef AUTO_VDROP_FACTOR
 #undef AUTO_VDROP_FACTOR
 #warning #define AUTO_VDROP_FACTOR not working with gcc, using fixed factor
 #endif
-
+#endif
 
 
 

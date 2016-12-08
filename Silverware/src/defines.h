@@ -75,6 +75,14 @@
 #define DEVO_CHAN_9 CH_HEADFREE
 #define DEVO_CHAN_10 CH_RTH
 
+
+#define MULTI_CHAN_5 CH_FLIP
+#define MULTI_CHAN_6 CH_RTH
+#define MULTI_CHAN_7 CH_PIC
+#define MULTI_CHAN_8 CH_VID
+#define MULTI_CHAN_9 CH_HEADFREE
+#define MULTI_CHAN_10 CH_INV
+
 // used for the pwm driver
 #define CH1 0
 #define CH2 1
