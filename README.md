@@ -55,6 +55,13 @@ http://www.rcgroups.com/forums/showthread.php?t=2634611
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Updates:
+
+###01.12.16
+* devo telemetry
+* high angle - up to 90 in level mode
+* autovdrop
+* trims on stock tx for switching
+
 ###11.08.16
 * added tx autocenter for stock tx
 * added extra devo channels that were MIA
