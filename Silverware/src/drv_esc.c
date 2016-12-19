@@ -2,15 +2,19 @@
 #include "project.h"
 #include "drv_pwm.h"
 #include "config.h"
+#include "drv_time.h"
 
 #ifdef USE_ESC_DRIVER
 
 // working motor range (microseconds)
-#define ESC_MIN 1000
-#define ESC_MAX 2000
+#define ESC_MIN 1180
+#define ESC_MAX 1860
 
 // esc throttle off setting (microseconds
 #define ESC_OFF 900
+
+// zero = no signal ( microseconds)
+#define ESC_FAILSAFE 0
 
 // invert = signal after fets (may need 1k pullup resistor)
 // commented = signal straight from CPU pins
@@ -19,11 +23,15 @@
 // enable preload
 #define ENABLE_PRELOAD 
 
+//#define ENABLE_ONESHOT
 
 
-#undef ESC_FREQ
 // signal repetition frequency (hertz) min 185
-#define ESC_FREQ 333
+#define ESC_FREQ_PPM 500
+//#define ESC_FREQ 490 // max with PPM out
+
+// Oneshot default 1000 ( 1khz)
+#define ESC_FREQ_ONESHOT 1000 
 
 // do not change below
 
@@ -33,6 +41,14 @@
 
 
 
+// set ESC_FREQ based on PPM or Oneshot use
+#undef ESC_FREQ
+#define ESC_FREQ ESC_FREQ_PPM
+
+#ifdef ENABLE_ONESHOT
+#undef ESC_FREQ
+#define ESC_FREQ ESC_FREQ_ONESHOT
+#endif
 
 
 
@@ -247,7 +263,8 @@
 
 
 #ifndef DISABLE_PWM_PINS
-
+unsigned long pwm_failsafe_time = 1;
+extern int failsafe;
 
 void init_timer( TIM_TypeDef* TIMx , int period);
 
@@ -615,15 +632,45 @@ void init_timer( TIM_TypeDef* TIMx , int period)
 
 extern int onground;
 
+float debugpwm[4];
+
 void pwm_set( uint8_t number , float pwmf)
 {
 
 if ( pwmf < 0.0f ) pwmf = 0.0f;
 if ( pwmf > 1.0f ) pwmf = 1.0f;
+
+debugpwm[number] = pwmf;
 	
 pwmf = mapf( pwmf , 0.0 , 1.0 , (float)ESC_MIN /ESC_uS , (float) ESC_MAX/ESC_uS);
 
 if (onground) pwmf = (float)ESC_OFF / ESC_uS;
+
+	if ( failsafe ) 
+	{
+		if ( !pwm_failsafe_time )
+		{
+			pwm_failsafe_time = gettime();
+		}
+		else
+		{
+			// 100mS after failsafe we turn off the signal (for safety while flashing)
+			if ( gettime() - pwm_failsafe_time > 100000 )
+			{
+				pwmf = (float) ESC_FAILSAFE / ESC_uS;
+			}
+		}
+		
+	}
+	else
+	{
+		pwm_failsafe_time = 0;
+	}
+
+	
+#ifdef ENABLE_ONESHOT
+pwmf = pwmf/8;
+#endif
 	
 int pwm = pwmf * PWMTOP ;
 	
