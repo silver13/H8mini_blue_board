@@ -90,11 +90,10 @@ void control( void)
 {	
 
 	// rates / expert mode
-#define RATES CH_EXPERT
 
 float rate_multiplier = 1.0;
 	
-	if ( aux[CH_EXPERT]  )
+	if ( aux[RATES]  )
 	{		
 		
 	}
