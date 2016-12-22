@@ -1,7 +1,11 @@
 ###H8mini Blue board version###
 
+Specific Blue instructions:
+https://www.rcgroups.com/forums/showthread.php?2721755-H8-blue-board-flashing-instructions#post35501995
+
 see also the post below for a fix of the issues affecting programming this board
 http://www.rcgroups.com/forums/showthread.php?t=2721755#post35501995
+
 
 From rcg user __kmtam__
 > Hi all, I finally got the h8mini blue board erased and flashed to Silverxxx firmware after zillion times of tried and error.
@@ -49,7 +53,14 @@ This port supports both acro only and dual mode. To enable acro only, an option 
 The H8 board - blue version - uses a stm32f030 and a XN297L 3 wire radio. The XN297L is differerent from the XN297 in that is supports 250K rate, and the debug registers are different.  [XN297L datasheet](https://drive.google.com/file/d/0B3AKcbg1PFrnbHRXMzUzUUFmUFk/view?pref=2&pli=1) (use google translate)
 
 ### Flashing instructions
+CG023 instructions:
 http://www.rcgroups.com/forums/showthread.php?t=2634611
+
+Specific Blue instructions:
+https://www.rcgroups.com/forums/showthread.php?2721755-H8-blue-board-flashing-instructions#post35501995
+
+###Linux/gcc version
+The gcc version compiles close to 16k, and may need turning off features in order to make it fit. Read __install.md__ for additional information.
 
 ###Wiki
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
