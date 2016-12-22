@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/silver13/H8mini_blue_board.svg?branch=master)](https://travis-ci.org/silver13/H8mini_blue_board)
+
 ###H8mini Blue board version###
 
 Specific Blue instructions:
