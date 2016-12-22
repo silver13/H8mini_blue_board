@@ -3,9 +3,6 @@
 Specific Blue instructions:
 https://www.rcgroups.com/forums/showthread.php?2721755-H8-blue-board-flashing-instructions#post35501995
 
-see also the post below for a fix of the issues affecting programming this board
-http://www.rcgroups.com/forums/showthread.php?t=2721755#post35501995
-
 
 From rcg user __kmtam__
 > Hi all, I finally got the h8mini blue board erased and flashed to Silverxxx firmware after zillion times of tried and error.
