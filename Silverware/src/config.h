@@ -12,6 +12,8 @@
 // max angle for level mode
 #define MAX_ANGLE_HI 55.0f
 
+#define LOW_RATES_MULTI 0.5f
+
 // disable inbuilt expo functions
 #define DISABLE_EXPO
 

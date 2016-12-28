@@ -86,6 +86,8 @@ extern int acro_override;
 float overthrottlefilt = 0;
 float underthrottlefilt = 0;
 
+float rxcopy[4];
+
 void control( void)
 {	
 
@@ -99,13 +101,13 @@ float rate_multiplier = 1.0;
 	}
 	else
 	{
-		rate_multiplier = 0.5f;
+		rate_multiplier = LOW_RATES_MULTI;
 	}
 	// make local copy
 	
 
 	
-	float rxcopy[4];	
+	
 	for ( int i = 0 ; i < 3 ; i++)
 	{
 		#ifdef STOCK_TX_AUTOCENTER
