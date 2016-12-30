@@ -114,6 +114,8 @@ unsigned long ledcommandtime = 0;
 
 void failloop( int val);
 
+int random_seed = 0;
+
 int main(void)
 {
 	
@@ -187,7 +189,11 @@ while ( count < 64 )
 	delay(1000);
 	count++;
 }
-
+#ifdef RX_BAYANG_BLE_APP
+   // for randomising MAC adddress of ble app - this will make the int = raw float value        
+    random_seed =  *(int *)&vbattfilt ; 
+    random_seed = random_seed&0xff;
+#endif
  vbattfilt = vbattfilt/64;	
 // startvref = startvref/64;
 

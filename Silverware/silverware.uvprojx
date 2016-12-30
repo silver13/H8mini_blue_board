@@ -483,6 +483,11 @@
               <FilePath>.\src\rx_bayang_protocol_ble.c</FilePath>
             </File>
             <File>
+              <FileName>rx_bayang_ble_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\rx_bayang_ble_app.c</FilePath>
+            </File>
+            <File>
               <FileName>rx_bayang_protocol_telemetry.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\rx_bayang_protocol_telemetry.c</FilePath>
