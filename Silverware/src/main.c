@@ -126,17 +126,15 @@ int main(void)
 clk_init();
 #endif
 	
-  gpio_init();
-
-
-	i2c_init();	
-	
+  gpio_init();	
 	
 	spi_init();
 	
   time_init();
 
 	delay(100000);
+		
+	i2c_init();	
 	
 	pwm_init();
 
@@ -206,6 +204,9 @@ if ( vbattfilt < (float) STOP_LOWBATTERY_TRESH) failloop(2);
 
 
 	gyro_cal();
+
+extern void rgb_init( void);
+rgb_init();
 
 #ifdef SERIAL_ENABLE
 serial_init();
@@ -427,10 +428,17 @@ else
 		}
 #endif
 
-#ifdef BUZZER_ENABLE
-	buzzer();
+
+#if ( RGB_LED_NUMBER > 0)
+extern	void rgb_led_lvc( void);
+rgb_led_lvc( );
 #endif
 
+
+#ifdef BUZZER_ENABLE	
+	buzzer();
+#endif
+		
 checkrx();
 	
 extern void osdcycle();	

@@ -22,21 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/*
-
-// original bluetooth LE idea by Dmitry Grinberg
-// http://dmitry.gr/index.php?r=05.Projects&proj=11.%20Bluetooth%20LE%20fakery
-
-// some bluetooth LE functions adapted from nrf24 code by Lijun 
-// http://doc.lijun.li/misc-nrf24-ble.html
-// https://github.com/lijunhw/nRF24_BLE/blob/master/Arduino/nRF24_BLE_advertizer_demo/nRF24_BLE_advertizer_demo.ino
-
-*/
 
 #include "binary.h"
 #include "drv_spi.h"
 #include "project.h"
-//#include "gd32f1x0.h"
 #include "xn297.h"
 #include "drv_time.h"
 #include <stdio.h>
@@ -92,7 +81,6 @@ void writeregs(uint8_t data[], uint8_t size)
           spi_sendbyte(data[i]);
       }
     spi_csoff();
-    delay(1000);
 }
 
 
@@ -158,15 +146,17 @@ writeregs( demodcal , sizeof(demodcal) );
 
     delay(100);
 
-    int rxaddress[5] = { 0, 0, 0, 0, 0 };
-    xn_writerxaddress(rxaddress);
-
+// write rx address " 0 0 0 0 0 "
+        
+   static uint8_t rxaddr[6] = { 0x2a , 0 , 0 , 0 , 0 , 0  };
+   writeregs( rxaddr , sizeof(rxaddr) );
+    
     xn_writereg(EN_AA, 0);      // aa disabled
     xn_writereg(EN_RXADDR, 1);  // pipe 0 only
-    xn_writereg(RF_SETUP, XN_POWER);    // lna high current on ( better performance )
+    xn_writereg(RF_SETUP, XN_POWER);    // power / data rate / lna
     xn_writereg(RX_PW_P0, 15);  // payload size
     xn_writereg(SETUP_RETR, 0); // no retransmissions ( redundant?)
-    xn_writereg(SETUP_AW, 3);   // address size (5 bits)
+    xn_writereg(SETUP_AW, 3);   // address size (5 bytes)
     xn_command(FLUSH_RX);
     xn_writereg(RF_CH, 0);      // bind on channel 0
 
@@ -196,22 +186,20 @@ writeregs( demodcal , sizeof(demodcal) );
 
 
 
-#define RXDEBUG
+//#define RXDEBUG
 
 #ifdef RXDEBUG
 unsigned long packettime;
 int channelcount[4];
 int failcount;
-int packetrx;
-int packetpersecond;
-
-
 int skipstats[12];
 int afterskip[12];
-//#warning "RX debug enabled"
+
+#warning "RX debug enabled"
 #endif
 
-
+int packetrx;
+int packetpersecond;
 
 
 void send_telemetry(void);
@@ -429,7 +417,7 @@ static int decodepacket(void)
 void nextchannel()
 {
     rf_chan++;
-    rf_chan %= 4;
+    rf_chan &= 3; // same as %4
     xn_writereg(0x25, rfchannel[rf_chan]);
 }
 
@@ -464,20 +452,25 @@ void checkrx(void)
                             telemetry_enabled = 1;
                             packet_period = PACKET_PERIOD_TELEMETRY;
                         }
+                        
                       rfchannel[0] = rxdata[6];
                       rfchannel[1] = rxdata[7];
                       rfchannel[2] = rxdata[8];
                       rfchannel[3] = rxdata[9];
+                        
 
-                      int rxaddress[5];
-                      rxaddress[0] = rxdata[1];
-                      rxaddress[1] = rxdata[2];
-                      rxaddress[2] = rxdata[3];
-                      rxaddress[3] = rxdata[4];
-                      rxaddress[4] = rxdata[5];
-
-                      xn_writerxaddress(rxaddress);
-                      xn_writetxaddress(rxaddress);
+                      uint8_t rxaddr[6] = { 0x2a ,  };
+                      
+                      for ( int i = 1 ; i < 6; i++)
+                      {
+                        rxaddr[i] = rxdata[i];
+                      }
+                      // write new rx address
+                      writeregs( rxaddr , sizeof(rxaddr) );
+                      rxaddr[0] = 0x30; // tx register ( write ) number
+                      
+                      // write new tx address
+                      writeregs( rxaddr , sizeof(rxaddr) );
 
                       xn_writereg(0x25, rfchannel[rf_chan]);    // Set channel frequency 
                       rxmode = RX_MODE_NORMAL;
@@ -507,9 +500,7 @@ void checkrx(void)
 
                 if (pass)
                   {
-#ifdef RXDEBUG
                       packetrx++;
-#endif
                       if (telemetry_enabled)
                           beacon_sequence();
                       skipchannel = 0;
@@ -578,14 +569,14 @@ void checkrx(void)
           rx[2] = 0;
           rx[3] = 0;
       }
-#ifdef RXDEBUG
+
     if (gettime() - secondtimer > 1000000)
       {
           packetpersecond = packetrx;
           packetrx = 0;
           secondtimer = gettime();
       }
-#endif
+
 
 }
 

@@ -41,10 +41,6 @@ else mag2 = 0.707f;
 stickvector[0] *=mag2;
 stickvector[1] *=mag2;	
 
-//float mag2 = Q_rsqrt( (stickvector[0] * stickvector[0] + stickvector[1] * stickvector[1]) / (1 - stickvector[2] * stickvector[2]));
-//stickvector[0] *=mag2;
-//stickvector[1] *=mag2;	
-
 
 // find error between stick vector and quad orientation
 // vector cross product 

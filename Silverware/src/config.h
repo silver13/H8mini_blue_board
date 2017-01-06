@@ -168,6 +168,10 @@
 // comment out to disable
 //#define AUTO_THROTTLE
 
+// enable auto lower throttle near max throttle to keep control
+// comment out to disable
+//#define MIX_LOWER_THROTTLE
+
 // build acro only firmware
 // removes the distraction of level mode for learning
 //#define ACRO_ONLY
@@ -293,17 +297,17 @@
 
 // not needed / functional without level mode
 #ifdef ACRO_ONLY
-	#define DISABLE_FLIP_SEQUENCER
-	#undef AUTO_THROTTLE
+#define DISABLE_FLIP_SEQUENCER
+#undef AUTO_THROTTLE
 #endif
 
 #ifdef MOTOR_BEEPS
- #ifdef USE_ESC_DRIVER
- #warning "MOTOR BEEPS_WORKS WITH BRUSHED MOTORS ONLY"
+#ifdef USE_ESC_DRIVER
+#warning "MOTOR BEEPS_WORKS WITH BRUSHED MOTORS ONLY"
 #endif
 #endif
 
-// needed for rssi
+//needed for rssi
 #ifdef OSD_LTM_PROTOCOL
 #define RXDEBUG
 #endif
@@ -312,16 +316,3 @@
 #ifdef RX_BAYANG_PROTOCOL_BLE_BEACON
 #undef STOP_LOWBATTERY
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-

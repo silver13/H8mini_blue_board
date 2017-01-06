@@ -146,7 +146,7 @@ void flip_sequencer()
 		break;
 			
 		case STAGE_FLIP_ROTATING_INVERTED:
-			if ( GEstG[2] > 0.1f ) 
+			if ( GEstG[2] > 200 ) 
 			{
 
 				//we no longer inverted
