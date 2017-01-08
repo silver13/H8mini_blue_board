@@ -41,6 +41,11 @@ THE SOFTWARE.
 
 #ifdef RX_CG023_PROTOCOL
 
+// compatibility with older version hardware.h
+#if ( !defined RADIO_XN297 && !defined RADIO_XN297L)
+#define RADIO_XN297
+#endif
+
 
 extern float rx[4];
 // the last 2 are always on and off respectively
@@ -61,20 +66,25 @@ delay(1000);
 }
 
 
-uint8_t bbcal[6] = { 0x3f , 0x4c , 0x84 , 0x6F , 0x9c , 0x20  };
 
-uint8_t rfcal[8] = { 0x3e , 0xc9 , 220 , 0x80 , 0x61 , 0xbb , 0xab , 0x9c  };
-
-uint8_t demodcal[6] = { 0x39 , 0x0b , 0xdf , 0xc4 , 0xa7 , 0x03};
 
 void rx_init()
 {
-/*
+
+#ifdef RADIO_XN297
+	
+static uint8_t bbcal[6] = { 0x3f , 0x4c , 0x84 , 0x6F , 0x9c , 0x20  };
+
+static uint8_t rfcal[8] = { 0x3e , 0xc9 , 220 , 0x80 , 0x61 , 0xbb , 0xab , 0x9c  };
+
+static uint8_t demodcal[6] = { 0x39 , 0x0b , 0xdf , 0xc4 , 0xa7 , 0x03};
+
 writeregs( bbcal , sizeof(bbcal) );
 writeregs( rfcal , sizeof(rfcal) );
 writeregs( demodcal , sizeof(demodcal) );
-*/
-int rxaddress[5] =  {0x26, 0xA8, 0x67, 0x35, 0xCC};
+#endif
+	
+static int rxaddress[5] =  {0x26, 0xA8, 0x67, 0x35, 0xCC};
 
 xn_writerxaddress( rxaddress);
 
@@ -86,22 +96,52 @@ xn_writerxaddress( rxaddress);
 	xn_writereg( SETUP_AW , 3 ); // address size (5 bits)
 	xn_command( FLUSH_RX);
   xn_writereg( RF_CH , 0x2D );  // bind  channel
+
+#ifdef RADIO_XN297
   xn_writereg( 0 , B00001111 ); // power up, crc enabled
-	
+#endif
+
+#ifdef RADIO_XN297L
+  xn_writereg( 0 , B10001111 ); // power up, crc enabled
+#endif
+
+
+#ifdef RADIO_CHECK
+void check_radio(void);
+ check_radio();
+#endif	
 }
+
+
+void check_radio()
+{	
+	int temp = xn_readreg( 0x0f); // rx address pipe 5	
+	// should be 0xc6
+	extern void failloop( int);
+	if ( temp != 0xc6) failloop(3);
+}
+
 
 static char checkpacket()
 {
-	int status = xn_readreg( 7 );
-  
-	if( (status & B00001110) != B00001110 )
-	{
-		// rx fifo not empty		
-		return 2;	
-	}
-	
-  return 0;
+    int status = xn_readreg(7);
+
+    if (status & (1 << MASK_RX_DR))
+      {                         // rx clear bit
+          // this is not working well
+          // xn_writereg( STATUS , (1<<MASK_RX_DR) );
+          //RX packet received
+          //return 1;
+      }
+    if ((status & B00001110) != B00001110)
+      {
+          // rx fifo not empty        
+          return 2;
+      }
+
+    return 0;
 }
+
 
 
 int rxdata[15];
@@ -128,16 +168,7 @@ int decode_cg023( void)
 // throttle		 
 		rx[3] = 0.00390625f * rxdata[5]; 
 		 
-#ifndef RX_CG023_SWAP_YAWROLL		 
-// normal yaw - roll
-		if ( rxdata[6] >= 0x80 )
-		{
-			rx[2] = -rxdata[6] * 0.0166666f + 2.1166582f; // yaw
-		}
-		else if ( rxdata[6] <= 0x3C ) rx[2] = (1.0f + ( rxdata[6] - 60) * 0.0166666f) ; // yaw
-		else rx[2] = 0.0;
-		rx[0] = - rxdata[8] * 0.0166666f + 2.1166582f; // roll
-#else
+
 		// swapped yaw - roll (mode 3)
 			if ( rxdata[6] >= 0x80 )
 		{
@@ -146,7 +177,6 @@ int decode_cg023( void)
 		else if ( rxdata[6] <= 0x3C ) rx[0] = (1.0f + ( rxdata[6] - 60) * 0.0166666f) ; // yaw
 		else rx[0] = 0.0;
 		rx[2] = - rxdata[8] * 0.0166666f + 2.1166582f; // roll
-#endif
 		
 		rx[1] = - rxdata[7] * 0.0166666f + 2.1166582f; 
 		
@@ -211,13 +241,8 @@ int failsafe = 0;
 //#define RXDEBUG
 
 #ifdef RXDEBUG	
-struct rxdebug
-	{
-	unsigned long packettime;
-	int failcount;
-	int packetpersecond;
-	} 
-	rxdebug;
+struct rxdebug rxdebug;
+
 int packetrx;
 unsigned long lastrxtime;
 unsigned long secondtimer;
@@ -242,7 +267,7 @@ void checkrx( void)
 
 				  xn_writereg(0x25, (uint8_t)(rxdata[1] - 0x7D) ); // Set channel frequency	
 				
-					#ifdef SERIAL	
+					#ifdef SERIAL_INFO	
 					printf( " BIND \n");
 					#endif
 				}

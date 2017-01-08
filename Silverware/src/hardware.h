@@ -30,11 +30,6 @@
 
 
 
-// always on pin ( for vreg if present)
-// used by cx-10 boards and other quads with switches
-// comment out to disable
-
-
 
 // BUZZER pin settings - buzzer active "high"
 // SWDAT and SWCLK pins OK here
