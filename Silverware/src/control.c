@@ -479,7 +479,8 @@ pidoutput[2] = -pidoutput[2];
 			  underthrottle = 0.0001f;
 
 			underthrottle *= ((float)MIX_THROTTLE_REDUCTION_PERCENT / 100.0f);
-			
+#else
+  underthrottle = 0.001f;			
 #endif			
 // over			
 		  if (overthrottlefilt > (float)MIX_THROTTLE_REDUCTION_MAX)
