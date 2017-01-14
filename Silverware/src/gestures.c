@@ -6,19 +6,11 @@
 #define STICKMAX 0.7f
 #define STICKCENTER 0.2f
 
-#ifdef GESTURES_USE_YAW
 
-#define GMACRO_LEFT (rx[2] < - STICKMAX)
-#define GMACRO_RIGHT (rx[2] >  STICKMAX)
-#define GMACRO_XCENTER (fabsf(rx[2]) < STICKCENTER)
+#define GMACRO_LEFT (rx[0] < - STICKMAX || rx[2] < - STICKMAX)
+#define GMACRO_RIGHT (rx[0] >  STICKMAX || rx[2] >  STICKMAX)
+#define GMACRO_XCENTER (fabsf(rx[0]) < STICKCENTER && fabsf(rx[2]) < STICKCENTER  )
 
-#else
-
-#define GMACRO_LEFT (rx[0] < - STICKMAX)
-#define GMACRO_RIGHT (rx[0] >  STICKMAX)
-#define GMACRO_XCENTER (fabsf(rx[0]) < STICKCENTER)
-
-#endif
 
 #define GMACRO_DOWN (rx[1] < - STICKMAX)
 #define GMACRO_UP (rx[1] >  STICKMAX)
@@ -143,12 +135,21 @@ const uint8_t command3[GSIZE] = {
 };
 
 
+uint8_t check_command( uint8_t  buffer1[] , const uint8_t  command[]  )
+{
+    for (int i = 0; i < GSIZE; i++)
+            {
+                if( buffer1[i] != command[GSIZE - i - 1])
+                return 0;
+            }     
+return 1;            
+}
+
 int gesture_sequence(int currentgesture)
 {
 
 	if (currentgesture != gbuffer[0])
 	  {			// add to queue
-		  int ok;
 
 		  for (int i = GSIZE; i >= 1; i--)
 		    {
@@ -159,16 +160,8 @@ int gesture_sequence(int currentgesture)
 
 
 // check commands
-		  ok = 1;
 
-		  for (int i = 0; i < GSIZE; i++)
-		    {
-			    if (gbuffer[i] != command1[GSIZE - i - 1])
-			      {
-				      ok = 0;
-			      }
-		    }
-		  if (ok)
+		  if (check_command ( &gbuffer[0] , &command1[0] ) )
 		    {
 			    // command 1
 
@@ -177,16 +170,8 @@ int gesture_sequence(int currentgesture)
 			    return 1;
 		    }
 
-		  ok = 1;
-
-		  for (int i = 0; i < GSIZE; i++)
-		    {
-			    if (gbuffer[i] != command2[GSIZE - i - 1])
-			      {
-				      ok = 0;
-			      }
-		    }
-		  if (ok)
+		
+		  if (check_command ( &gbuffer[0] , &command2[0] ))
 		    {
 			    // command 2
 
@@ -195,16 +180,8 @@ int gesture_sequence(int currentgesture)
 			    return 2;
 		    }
 
-		  ok = 1;
-
-		  for (int i = 0; i < GSIZE; i++)
-		    {
-			    if (gbuffer[i] != command3[GSIZE - i - 1])
-			      {
-				      ok = 0;
-			      }
-		    }
-		  if (ok)
+		
+		  if (check_command ( &gbuffer[0] , &command3[0] ))
 		    {
 			    // command 3
 
