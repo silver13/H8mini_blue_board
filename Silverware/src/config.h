@@ -125,7 +125,9 @@
 
 #define LEDS_ON CH_ON
 
-
+// switch for fpv / other, requires fet
+// comment out to disable
+//#define FPV_ON CH_ON
 
 // aux1 channel starts on if this is defined, otherwise off.
 #define AUX1_START_ON

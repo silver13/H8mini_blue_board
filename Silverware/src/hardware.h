@@ -289,3 +289,9 @@
 #define RGB_PIN GPIO_Pin_11
 #define RGB_PORT GPIOA
 
+// pin for fpv switch ( turns off at failsafe )
+// GPIO_Pin_13 // SWDAT - GPIO_Pin_14 // SWCLK  
+// if programming pin, will not flash after bind
+#define FPV_PIN GPIO_Pin_13
+#define FPV_PORT GPIOA 
+

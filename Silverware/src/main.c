@@ -438,6 +438,22 @@ rgb_led_lvc( );
 #ifdef BUZZER_ENABLE	
 	buzzer();
 #endif
+
+            
+#ifdef FPV_ON
+// fpv switch
+    static int fpv_init = 0;
+    if ( !fpv_init && rxmode == RXMODE_NORMAL ) {
+        fpv_init = gpio_init_fpv();
+        }
+    if ( fpv_init ) {
+        if ( failsafe ) {
+            GPIO_WriteBit( FPV_PORT, FPV_PIN, Bit_RESET );
+        } else {
+            GPIO_WriteBit( FPV_PORT, FPV_PIN, aux[ FPV_ON ] ? Bit_SET : Bit_RESET );
+        }
+    }
+#endif
 		
 checkrx();
 	
