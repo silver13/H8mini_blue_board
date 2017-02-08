@@ -143,6 +143,14 @@ void sixaxis_read(void)
 		accel[1] = -(temp * INVSQRT2 - accel[1] * INVSQRT2);	
 		}
 #endif
+        
+#ifdef SENSOR_ROTATE_45_CW
+		{
+		float temp = accel[1];
+		accel[1] = (accel[1] * INVSQRT2 + accel[0] * INVSQRT2);
+		accel[0] = -(temp * INVSQRT2 - accel[0] * INVSQRT2);	
+		}
+#endif
 	
 #ifdef SENSOR_ROTATE_90_CW
 		{
@@ -190,7 +198,15 @@ gyronew[2] = gyronew[2] - gyrocal[2];
 		gyronew[1] = gyronew[0] * INVSQRT2 + gyronew[1] * INVSQRT2;
 		gyronew[0] = gyronew[0] * INVSQRT2 - temp * INVSQRT2;	
 		}
-#endif	
+#endif
+
+#ifdef SENSOR_ROTATE_45_CW
+		{
+		float temp = gyronew[0];
+		gyronew[0] = gyronew[1] * INVSQRT2 + gyronew[0] * INVSQRT2;
+		gyronew[1] = gyronew[1] * INVSQRT2 - temp * INVSQRT2;	
+		}
+#endif	        
 		
 #ifdef SENSOR_ROTATE_90_CW
 		{
@@ -268,6 +284,14 @@ gyronew[2] = gyronew[2] - gyrocal[2];
 		float temp = gyronew[1];
 		gyronew[1] = gyronew[0] * INVSQRT2 + gyronew[1] * INVSQRT2;
 		gyronew[0] = gyronew[0] * INVSQRT2 - temp * INVSQRT2;	
+		}
+#endif
+        
+#ifdef SENSOR_ROTATE_45_CW
+		{
+		float temp = gyronew[0];
+		gyronew[0] = gyronew[1] * INVSQRT2 + gyronew[0] * INVSQRT2;
+		gyronew[1] = gyronew[1] * INVSQRT2 - temp * INVSQRT2;	
 		}
 #endif
 			
