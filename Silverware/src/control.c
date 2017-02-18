@@ -281,11 +281,16 @@ float	throttle;
 if ( rx[3] < 0.1f ) throttle = 0;
 else throttle = (rx[3] - 0.1f)*1.11111111f;
 
+#ifdef AIRMODE_HOLD_SWITCH
+	if (failsafe || aux[AIRMODE_HOLD_SWITCH] || throttle < 0.001f && !onground_long)
+	{
+		onground_long = 0;
+#else
 
 // turn motors off if throttle is off and pitch / roll sticks are centered
 	if ( failsafe || (throttle < 0.001f && (!ENABLESTIX || !onground_long || aux[LEVELMODE] || (fabsf(rx[ROLL]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[PITCH]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[YAW]) < (float) ENABLESTIX_TRESHOLD ) ) ) ) 
 	{	// motors off
-
+#endif
 		if ( onground_long )
 		{
 			if ( gettime() - onground_long > ENABLESTIX_TIMEOUT)
