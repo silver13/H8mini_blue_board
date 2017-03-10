@@ -86,7 +86,7 @@ void ledoff( uint8_t val )
 	#endif
 #endif
 #if ( LED_NUMBER > 3 )
-	#ifdef LED1_INVERT
+	#ifdef LED4_INVERT
 	if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
 	#else
 	if ( val&8) GPIO_ResetBits( LED4PORT, LED4PIN);	
