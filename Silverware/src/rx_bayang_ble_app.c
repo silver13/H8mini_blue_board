@@ -116,6 +116,8 @@ THE SOFTWARE.
 // If TX_POWER_GENERAL/TX_POWER_ON_TLM still produces constant TLM DISCONNECTED errors when motors are on and on high throttle, try also enabling USE_ALL_BLE_CHANNELS.
 // You can use all three settings in the same time or experiment with one or two of them until you get better and stable bluetooth signal.
 
+#define OPTION_GAUSSIAN
+
 //#define USE_ALL_BLE_CHANNELS
 
 // ----------------------------------------------
@@ -216,11 +218,21 @@ aux[CH_AUX1] = 1;
 
 	
 #ifdef RADIO_XN297L
-	
+
+#ifdef OPTION_GAUSSIAN
+// Gauss filter amplitude - lowest
+static uint8_t demodcal[2] = { 0x39 , B00000001 };
+writeregs( demodcal , sizeof(demodcal) );
+#endif
+
 #define XN_TO_RX B10001111
 #define XN_TO_TX B10000010
+
+#ifdef TX_POWER_GENERAL
+#define XN_POWER B00000111|((TX_POWER_GENERAL&7)<<3)
+#else
 #define XN_POWER B00111111
-	
+#endif
 #endif
 
 
