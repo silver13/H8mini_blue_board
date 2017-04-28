@@ -84,7 +84,7 @@ http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 ### 30.05.16
 * fixed low rates control issue in yaw+roll
 
-###19.05
+### 19.05
 * added gestures
 * changed imu from the experimental one that somehow made it in, to the old one
 
