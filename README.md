@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/silver13/H8mini_blue_board.svg?branch=master)](https://travis-ci.org/silver13/H8mini_blue_board)
 
-###H8mini Blue board version###
+### H8mini Blue board version###
 
 Specific Blue instructions:
 https://www.rcgroups.com/forums/showthread.php?2721755-H8-blue-board-flashing-instructions#post35501995
@@ -58,39 +58,39 @@ http://www.rcgroups.com/forums/showthread.php?t=2634611
 Specific Blue instructions:
 https://www.rcgroups.com/forums/showthread.php?2721755-H8-blue-board-flashing-instructions#post35501995
 
-###Linux/gcc version
+### Linux/gcc version
 The gcc version compiles close to 16k, and may need turning off features in order to make it fit. Read __install.md__ for additional information.
 
-###Wiki
+### Wiki
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
-###Updates:
+### Updates:
 
-###01.12.16
+### 01.12.16
 * devo telemetry
 * high angle - up to 90 in level mode
 * autovdrop
 * trims on stock tx for switching
 
-###11.08.16
+### 11.08.16
 * added tx autocenter for stock tx
 * added extra devo channels that were MIA
 * bluetooth beacon was added previously
 
-###03.07.16
+### 03.07.16
 * added updates from cg023 build
 * now using hardware i2c for full speed (1 Mhz)
 
-###30.05.16
+### 30.05.16
 * fixed low rates control issue in yaw+roll
 
-###19.05
+### 19.05
 * added gestures
 * changed imu from the experimental one that somehow made it in, to the old one
 
-###11.05
+### 11.05
 * added linux compilation support
 
-###10.05
+### 10.05
 * minor update
 * additional protocols now work
