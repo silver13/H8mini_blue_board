@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "defines.h"
 
 
-extern float rx[7];
+extern float rx[];
 extern float gyro[3];
 extern int failsafe;
 extern float pidoutput[PIDNUMBER];
