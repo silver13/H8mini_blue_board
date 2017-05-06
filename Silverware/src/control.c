@@ -529,9 +529,16 @@ thrsum = 0;
 		#endif
 
 		#ifdef MOTORS_TO_THROTTLE
-		mix[i] = throttle;
 		// flash leds in valid throttle range
 		ledcommand = 1;
+        float test = throttle;
+        // Spin all motors if the roll/pitch stick is centered.
+        // Otherwise select the motors to test by deflecting the roll/pitch stick.
+        if ( i == 1 && ( rx[ROLL] > 0.5f || rx[PITCH] < -0.5f ) ) { test = 0; }
+        if ( i == 0 && ( rx[ROLL] > 0.5f || rx[PITCH] > 0.5f ) ) { test = 0; }
+        if ( i == 3 && ( rx[ROLL] < -0.5f || rx[PITCH] < -0.5f ) ) { test = 0; }
+		if ( i == 2 && ( rx[ROLL] < -0.5f || rx[PITCH] > 0.5f ) ) { test = 0; }
+        mix[i] = test;   
 		#warning "MOTORS TEST MODE"
 		#endif
 
@@ -556,7 +563,7 @@ thrsum = 0;
 		#else
 		// throttle test mode
 		ledcommand = 1;
-		pwm_set( i , mix[i] );
+		pwm_set( i , test );
 		#endif
 		#else
 		// no motors mode ( anti-optimization)
