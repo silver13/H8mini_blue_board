@@ -210,8 +210,8 @@
 //#define BUZZER_ENABLE
 
 
-
-
+// Comment out to disable pid tuning gestures
+#define PID_GESTURE_TUNING
 
 
 

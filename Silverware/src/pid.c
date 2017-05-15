@@ -33,10 +33,11 @@ THE SOFTWARE.
 #define NEW_DTERM
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include "pid.h"
 #include "util.h"
 #include "config.h"
-
+#include "led.h"
 #include "defines.h"
 
 
@@ -49,6 +50,12 @@ float pidki[PIDNUMBER] = { 15e-1  , 15e-1 , 5e-1 };
 
 // Kd											ROLL       PITCH     YAW
 float pidkd[PIDNUMBER] = { 6.8e-1 , 6.8e-1  , 0.0e-1 };	
+// PID_GESTURES modifications
+int number_of_increments[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+int current_pid_axis = 0;
+int current_pid_term = 1;
+float * current_pid_term_pointer = pidkp;
+// PID_GESTURES modifications - End
 
 // "setpoint weighting" 0.0 - 1.0 where 0.0 = normal pid
 float b[3] = { 0.0 , 0.0 , 0.0};
@@ -99,10 +106,95 @@ static float lasterror2[PIDNUMBER];
 
 float timefactor;
 
+extern int ledcommand;
+
 void pid_precalc()
 {
 	timefactor = 0.0032f / looptime;
 }
+
+// PID_GESTURES modifications
+int get_current_pid_term() { return current_pid_term; } // These may be replaced by extern variables.
+int get_current_pid_axis() { return current_pid_axis; } // These may be replaced by extern variables.
+
+// Cycle through P / I / D - The initial value is P
+// The return value is the currently selected TERM (after setting the next one)
+// 1: P
+// 2: I
+// 3: D
+// The return value is used to blink the leds in main.c
+int next_pid_term()
+{
+	current_pid_axis = 0;
+	
+	switch (current_pid_term)
+	{
+		case 1:
+			current_pid_term_pointer = pidki;
+			current_pid_term = 2;
+			break;
+		case 2:
+			current_pid_term_pointer = pidkd;
+			current_pid_term = 3;
+			break;
+		case 3:
+			current_pid_term_pointer = pidkp;
+			current_pid_term = 1;
+			break;
+	}
+	
+	return current_pid_term;
+}
+
+// Cycle through the axis - Initial is Roll
+// Return value is the selected axis, after setting the next one.
+// 1: Roll
+// 2: Pitch
+// 3: Yaw
+// The return value is used to blink the leds in main.c
+int next_pid_axis()
+{
+	int size = 3;
+	if (current_pid_axis == size - 1) {
+		current_pid_axis = 0;
+	}
+	else {
+		current_pid_axis++;
+	}
+	
+	return current_pid_axis + 1;
+}
+
+int change_pid_value(int increase)
+{
+	float multiplier = 0.9f;
+	if (increase) {
+		multiplier = 1.1f;
+		number_of_increments[current_pid_term][current_pid_axis]++;
+	}
+	else {
+		number_of_increments[current_pid_term][current_pid_axis]--;
+	}
+	current_pid_term_pointer[current_pid_axis] = current_pid_term_pointer[current_pid_axis] * multiplier;
+	
+	return abs(number_of_increments[current_pid_term][current_pid_axis]);
+}
+
+// Increase currently selected term, for the currently selected axis, (by functions above) by 10%
+// The return value, is absolute number of times the specific term/axis was increased or decreased.  For example, if P for Roll was increased by 10% twice,
+// And then reduced by 10% 3 times, the return value would be 1  -  The user has to rememeber he has eventually reduced the by 10% and not increased by 10%
+// I guess this can be improved by using the red leds for increments and blue leds for decrements or something, or just rely on SilverVISE
+int increase_pid()
+{
+	return change_pid_value(1);
+}
+
+// Same as increase_pid but... you guessed it... decrease!
+int decrease_pid()
+{
+	return change_pid_value(0);
+}
+// PID_GESTURES modifications - End
 
 float pid(int x )
 { 
