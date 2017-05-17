@@ -162,8 +162,10 @@ THE SOFTWARE.
 // how many times to hop ahead if no reception
 #define HOPPING_NUMBER 4
 
+
 int current_PID_for_display = 0;
 int PID_index_delay = 0;
+
 
 
 #ifdef RX_BAYANG_BLE_APP
@@ -688,6 +690,7 @@ int TLMorPID = 0; // 0 = TLM, 1 = PID+TLM
 TLMorPID = 1; // 0 = TLM, 1 = PID+TLM
 #endif
 
+	
 if (onground ==1)
 {
 	time_throttle_on = uptime;
@@ -696,7 +699,6 @@ else
 {
 	total_time_in_air += (uptime - time_throttle_on);
 	time_throttle_on = uptime;
-	//TLMorPID = 0; // if not on ground, screen is back to TLM!
 }
 unsigned int total_time_in_air_time = total_time_in_air>>20;
 total_time_in_air_time = total_time_in_air_time *10;
@@ -737,7 +739,6 @@ buf[L++] = 0x06; // flag value
 buf[L++] =  0x15;  // Length of next block
 buf[L++] =  0x16;  // Service Data
 
-
 // ------------------------- TLM+PID
 if (TLMorPID == 1)
 {
@@ -766,8 +767,6 @@ for ( int i = string_len ; i < 6; i++)
 	buf[L++] = ' '; //blank
 	}
 #else
-
-
 buf[L++]=(char)'N';
 buf[L++]=(char)'O';
 buf[L++]=(char)'N';
@@ -775,6 +774,7 @@ buf[L++]=(char)'A';
 buf[L++]=(char)'M';
 buf[L++]=(char)'E';
 #endif
+
 	
 extern int current_pid_term; //1 = pidkp, 2 = pidki, 3 = pidkd
 extern int current_pid_axis; //0 = roll, 1 = pitch, 2 = yaw
@@ -855,14 +855,6 @@ if (PID_index_delay > 10) {
 }
 
 
-
-
-
-
-
-
-
-
 if (TLMorPID == 0)
 {
 	buf[L++] =  0x1F; //TLM datatype_and_packetID;  // xxxxyyyy -> yyyy = 1111 packet type ID (custom BLE type), xxxx = type of data in packet: 0001 -> telemetry, 0002->PID
@@ -899,43 +891,23 @@ buf[L++]=(char)'A';
 buf[L++]=(char)'M';
 buf[L++]=(char)'E';
 #endif
+		
+	
 	
 buf[L++] =  0x00; //reserved for future use
-	
 buf[L++] = packetpersecond_short;
 buf[L++] =  onground_and_bind; //binary xxxxabcd - xxxx = error code or warning, a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 buf[L++] =  vbatt_comp_int>>8;  // Battery voltage compensated
 buf[L++] =  vbatt_comp_int;  // Battery voltage compensated
-
-
 buf[L++] =  total_time_in_air_time>>8;  // total time in air
 buf[L++] =  total_time_in_air_time;  // total time in air
-
 buf[L++] =  time>>8;
 buf[L++] =  time;
 buf[L++] =  rate_and_mode_value; //xxxxxxRM //rate + mode R = rate (0 - normal, 1 - fast) , M = mode (1 - level, 0 - acro)
-
 buf[L++] =  0x00; //reserved for future use
 
 L=L+3; //crc
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 btLePacketEncode(buf, L, ch );
@@ -1226,4 +1198,3 @@ unsigned long temptime = gettime();
 
 
 #endif
-
