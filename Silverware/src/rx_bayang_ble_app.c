@@ -776,12 +776,12 @@ buf[L++]=(char)'E';
 #endif
 
 	
-extern int current_pid_term; //1 = pidkp, 2 = pidki, 3 = pidkd
+extern int current_pid_term; //0 = pidkp, 1 = pidki, 2 = pidkd
 extern int current_pid_axis; //0 = roll, 1 = pitch, 2 = yaw
 
 //int selectedPID = 0; //inxed of selected PID for changing
 	
-int selectedPID = ((current_pid_term-1)*3)+(current_pid_axis);
+int selectedPID = ((current_pid_term)*3)+(current_pid_axis);
 	
 buf[L++] =  (current_PID_for_display<<4)+selectedPID; // xy => x=current PID for display 0 - 14 (cycling...), y = selected PID for changing 0 - 14
 	

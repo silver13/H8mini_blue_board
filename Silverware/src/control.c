@@ -196,7 +196,6 @@ float rate_multiplier = 1.0;
 			      }
 					#ifdef PID_GESTURE_TUNING
 						
-					// PID_GESTURES modifications - Removed ledcommand = 1 for all cases, and added it just for command == 1 or 2
 					int blink = 0;
 			    if (command == 4)
 			      {
@@ -223,7 +222,6 @@ float rate_multiplier = 1.0;
 					// U D R - Increase value
 					// U D L - Descrease value
 					ledblink = blink; //Will cause led logic to blink the number of times ledblink has stored in it.
-					// PID_GESTURES modifications - End
 					#endif
 		    }
 	  }
