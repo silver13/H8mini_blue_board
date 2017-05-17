@@ -50,12 +50,10 @@ float pidki[PIDNUMBER] = { 15e-1  , 15e-1 , 5e-1 };
 
 // Kd											ROLL       PITCH     YAW
 float pidkd[PIDNUMBER] = { 6.8e-1 , 6.8e-1  , 0.0e-1 };	
-// PID_GESTURES modifications
 int number_of_increments[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 int current_pid_axis = 0;
-int current_pid_term = 1;
+int current_pid_term = 0;
 float * current_pid_term_pointer = pidkp;
-// PID_GESTURES modifications - End
 
 // "setpoint weighting" 0.0 - 1.0 where 0.0 = normal pid
 float b[3] = { 0.0 , 0.0 , 0.0};
@@ -113,10 +111,6 @@ void pid_precalc()
 	timefactor = 0.0032f / looptime;
 }
 
-// PID_GESTURES modifications
-int get_current_pid_term() { return current_pid_term; } // These may be replaced by extern variables.
-int get_current_pid_axis() { return current_pid_axis; } // These may be replaced by extern variables.
-
 // Cycle through P / I / D - The initial value is P
 // The return value is the currently selected TERM (after setting the next one)
 // 1: P
@@ -129,21 +123,21 @@ int next_pid_term()
 	
 	switch (current_pid_term)
 	{
-		case 1:
+		case 0:
 			current_pid_term_pointer = pidki;
+			current_pid_term = 1;
+			break;
+		case 1:
+			current_pid_term_pointer = pidkd;
 			current_pid_term = 2;
 			break;
 		case 2:
-			current_pid_term_pointer = pidkd;
-			current_pid_term = 3;
-			break;
-		case 3:
 			current_pid_term_pointer = pidkp;
-			current_pid_term = 1;
+			current_pid_term = 0;
 			break;
 	}
 	
-	return current_pid_term;
+	return current_pid_term + 1;
 }
 
 // Cycle through the axis - Initial is Roll
@@ -194,7 +188,6 @@ int decrease_pid()
 {
 	return change_pid_value(0);
 }
-// PID_GESTURES modifications - End
 
 float pid(int x )
 { 

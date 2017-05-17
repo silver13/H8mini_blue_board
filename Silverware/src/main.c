@@ -111,7 +111,7 @@ extern int failsafe;
 
 // for led flash on gestures
 int ledcommand = 0;
-int ledblink = 0; // PID_GESTURES modification
+int ledblink = 0;
 unsigned long ledcommandtime = 0;
 
 void failloop( int val);
@@ -401,7 +401,6 @@ else
 							    }
 							  ledflash(100000, 8);
 						  }
-						// PID_GESTURES modifications
 						else if (ledblink)
 						{
 							if (!ledcommandtime)
@@ -412,7 +411,7 @@ else
 								    ledcommandtime = 0;
 							    }
 							ledflash(500000, 1);
-						} // PID_GESTURES modifications - End
+						}
 						else
 					#endif // end gesture led flash
 				if ( aux[LEDS_ON] )
