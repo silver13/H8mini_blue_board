@@ -182,8 +182,7 @@ float rate_multiplier = 1.0;
 		    }
 		  else
 		    {
-					// PID_GESTURES modifications - Removed ledcommand = 1 for all cases, and added it just for command == 1 or 2
-					int blink = 0;
+
 			    if (command == 2)
 			      {
 				      aux[CH_AUX1] = 1;
@@ -195,6 +194,10 @@ float rate_multiplier = 1.0;
 				      ledcommand = 1;
 							aux[CH_AUX1] = 0;
 			      }
+					#ifdef PID_GESTURE_TUNING
+						
+					// PID_GESTURES modifications - Removed ledcommand = 1 for all cases, and added it just for command == 1 or 2
+					int blink = 0;
 			    if (command == 4)
 			      {
 							// Cycle to next pid term (P I D)
@@ -221,6 +224,7 @@ float rate_multiplier = 1.0;
 					// U D L - Descrease value
 					ledblink = blink; //Will cause led logic to blink the number of times ledblink has stored in it.
 					// PID_GESTURES modifications - End
+					#endif
 		    }
 	  }
 		#endif		
