@@ -43,13 +43,13 @@ THE SOFTWARE.
 
 
 // Kp											ROLL       PITCH     YAW
-float pidkp[PIDNUMBER] = { 17.0e-2 , 17.0e-2  , 10e-1 }; 
+float pidkp[PIDNUMBER] = { 17.0e-2 , 17.0e-2  , 10e-1 };
 
 // Ki											ROLL       PITCH     YAW
-float pidki[PIDNUMBER] = { 15e-1  , 15e-1 , 5e-1 };	
+float pidki[PIDNUMBER] = { 15e-1  , 15e-1 , 5e-1 };
 
 // Kd											ROLL       PITCH     YAW
-float pidkd[PIDNUMBER] = { 6.8e-1 , 6.8e-1  , 0.0e-1 };	
+float pidkd[PIDNUMBER] = { 6.8e-1 , 6.8e-1  , 0.0e-1 };
 int number_of_increments[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 int current_pid_axis = 0;
 int current_pid_term = 0;
@@ -153,7 +153,14 @@ int next_pid_axis()
 		current_pid_axis = 0;
 	}
 	else {
+		#ifdef COMBINE_PITCH_ROLL_PID_TUNING
+		if (current_pid_axis == 0 || current_pid_axis == 1) {
+			// Skip axis == 1 which is roll, and go directly to 2 (Yaw)
+			current_pid_axis = 2;
+		}
+		#else
 		current_pid_axis++;
+		#endif
 	}
 	
 	return current_pid_axis + 1;
@@ -167,11 +174,26 @@ int change_pid_value(int increase)
 	if (increase) {
 		multiplier = (float)PID_GESTURES_MULTI;
 		number_of_increments[current_pid_term][current_pid_axis]++;
+		#ifdef COMBINE_PITCH_ROLL_PID_TUNING
+		if (current_pid_axis == 0) {
+			number_of_increments[current_pid_term][current_pid_axis+1]++;	
+		}
+		#endif
 	}
 	else {
 		number_of_increments[current_pid_term][current_pid_axis]--;
+		#ifdef COMBINE_PITCH_ROLL_PID_TUNING
+		if (current_pid_axis == 0) {
+			number_of_increments[current_pid_term][current_pid_axis+1]--;	
+		}
+		#endif
 	}
 	current_pid_term_pointer[current_pid_axis] = current_pid_term_pointer[current_pid_axis] * multiplier;
+	#ifdef COMBINE_PITCH_ROLL_PID_TUNING
+	if (current_pid_axis == 0) {
+		current_pid_term_pointer[current_pid_axis+1] = current_pid_term_pointer[current_pid_axis+1] * multiplier;
+	}
+	#endif
 	
 	return abs(number_of_increments[current_pid_term][current_pid_axis]);
 }
