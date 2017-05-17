@@ -43,13 +43,13 @@ THE SOFTWARE.
 
 
 // Kp											ROLL       PITCH     YAW
-float pidkp[PIDNUMBER] = { 17.0e-2 , 17.0e-2  , 10e-1 }; 
+float pidkp[PIDNUMBER] = { 22.3e-2 , 22.3e-2  , 10e-1 }; 
 
 // Ki											ROLL       PITCH     YAW
-float pidki[PIDNUMBER] = { 15e-1  , 15e-1 , 5e-1 };	
+float pidki[PIDNUMBER] = { 10e-1  , 10e-1 , 5e-1 };	
 
 // Kd											ROLL       PITCH     YAW
-float pidkd[PIDNUMBER] = { 6.8e-1 , 6.8e-1  , 0.0e-1 };	
+float pidkd[PIDNUMBER] = { 11e-1 , 11e-1  , 0.0e-1 };	
 // PID_GESTURES modifications
 int number_of_increments[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 int current_pid_axis = 0;
