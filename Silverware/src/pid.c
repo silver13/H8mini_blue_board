@@ -159,11 +159,13 @@ int next_pid_axis()
 	return current_pid_axis + 1;
 }
 
+#define PID_GESTURES_MULTI 1.1f
+
 int change_pid_value(int increase)
 {
-	float multiplier = 0.9f;
+	float multiplier = 1.0f/(float)PID_GESTURES_MULTI;
 	if (increase) {
-		multiplier = 1.1f;
+		multiplier = (float)PID_GESTURES_MULTI;
 		number_of_increments[current_pid_term][current_pid_axis]++;
 	}
 	else {
