@@ -49,6 +49,7 @@ THE SOFTWARE.
 #include "drv_softi2c.h"
 #include "drv_serial.h"
 #include "buzzer.h"
+#include "drv_fmc.h"
 
 #include "binary.h"
 
@@ -118,11 +119,20 @@ void failloop( int val);
 
 int random_seed = 0;
 
+unsigned long aaaz = 5;
+unsigned long bbbz = 1;
+
 int main(void)
 {
+//	writeword(0, *(unsigned long*)&aaaz);
+//	unsigned long result = fmc_read(0);
+//	bbbz = *(float *)&result;
+writeword(0, aaaz);
+	unsigned long result = fmc_read(0);
+	bbbz = result;
 	
 	delay(1000);
-
+	
 
 #ifdef ENABLE_OVERCLOCK
 clk_init();
@@ -147,6 +157,7 @@ clk_init();
 
 
 	sixaxis_init();
+	
 	
 	if ( sixaxis_check() ) 
 	{
@@ -227,7 +238,7 @@ serial_init();
 	
 // read accelerometer calibration values from option bytes ( 2* 8bit)
 extern float accelcal[3];
-extern int readdata( int datanumber);
+extern int readdata( unsigned int datanumber);
 
  accelcal[0] = readdata( OB->DATA0 ) - 127;
  accelcal[1] = readdata( OB->DATA1 ) - 127;
