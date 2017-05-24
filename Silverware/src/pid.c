@@ -154,7 +154,8 @@ int next_pid_axis()
 	}
 	else {
 		#ifdef COMBINE_PITCH_ROLL_PID_TUNING
-		if (current_pid_axis == 0) {
+		if (current_pid_axis == 0 || current_pid_axis == 1) {
+			// Skip axis == 1 which is roll, and go directly to 2 (Yaw)
 			current_pid_axis = 2;
 		}
 		#else
