@@ -49,6 +49,7 @@ THE SOFTWARE.
 #include "drv_softi2c.h"
 #include "drv_serial.h"
 #include "buzzer.h"
+#include "drv_fmc.h"
 
 #include "binary.h"
 
@@ -107,7 +108,7 @@ char auxchange[AUXNUMBER];
 extern int rxmode;
 // failsafe on / off
 extern int failsafe;
-
+extern float hardcoded_pid_identifier;
 
 // for led flash on gestures
 int ledcommand = 0;
@@ -120,9 +121,8 @@ int random_seed = 0;
 
 int main(void)
 {
-	
 	delay(1000);
-
+	
 
 #ifdef ENABLE_OVERCLOCK
 clk_init();
@@ -147,6 +147,7 @@ clk_init();
 
 
 	sixaxis_init();
+	
 	
 	if ( sixaxis_check() ) 
 	{
@@ -206,7 +207,11 @@ if ( vbattfilt < (float) STOP_LOWBATTERY_TRESH) failloop(2);
 
 
 	gyro_cal();
-
+	hardcoded_pid_identifier = get_hard_coded_pid_identifier();
+	if (!hardcoded_pids_changed()) {
+		read_pids_from_mem();	
+	}
+	
 extern void rgb_init( void);
 rgb_init();
 
@@ -227,12 +232,11 @@ serial_init();
 	
 // read accelerometer calibration values from option bytes ( 2* 8bit)
 extern float accelcal[3];
-extern int readdata( int datanumber);
+extern int readdata( unsigned int datanumber);
 
  accelcal[0] = readdata( OB->DATA0 ) - 127;
  accelcal[1] = readdata( OB->DATA1 ) - 127;
 #endif
-
 
 extern unsigned int liberror;
 if ( liberror ) 
@@ -510,7 +514,6 @@ void failloop( int val)
 	}	
 	
 }
-
 
 void HardFault_Handler(void)
 {
