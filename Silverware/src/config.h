@@ -6,11 +6,11 @@
 
 // rate in deg/sec
 // for acro mode
-#define MAX_RATE 720.0
+#define MAX_RATE 360.0
 #define MAX_RATEYAW 360.0
 
 // max angle for level mode
-#define MAX_ANGLE_HI 90.0f
+#define MAX_ANGLE_HI 55.0f
 
 #define LOW_RATES_MULTI 0.5f
 
@@ -80,10 +80,10 @@
 //#define SOFT_LPF_1ST_100HZ
 //#define SOFT_LPF_2ND_043HZ
 //#define SOFT_LPF_2ND_088HZ
-#define SOFT_LPF_4TH_088HZ
+//#define SOFT_LPF_4TH_088HZ
 //#define SOFT_LPF_4TH_160HZ
 //#define SOFT_LPF_4TH_250HZ
-//#define SOFT_LPF_NONE
+#define SOFT_LPF_NONE
 
 
 // this works only on newer boards (non mpu-6050)
@@ -158,15 +158,15 @@
 // pwm frequency for motor control
 // a higher frequency makes the motors more linear
 // in Hz
-//#define PWMFREQ 8000
-#define PWMFREQ 16000
+#define PWMFREQ 8000
+//#define PWMFREQ 16000
 
 // motor curve to use
 // the pwm frequency has to be set independently
 // 720motors - use 8khz and curve none.
-//#define MOTOR_CURVE_NONE
+#define MOTOR_CURVE_NONE
 //#define MOTOR_CURVE_6MM_490HZ
-#define MOTOR_CURVE_85MM_8KHZ
+//#define MOTOR_CURVE_85MM_8KHZ
 //#define MOTOR_CURVE_85MM_32KHZ
 
 // lost quad beeps using motors (30 sec timeout)
@@ -189,9 +189,9 @@
 //#define RX_CG023_PROTOCOL
 //#define RX_H7_PROTOCOL
 //#define RX_BAYANG_PROTOCOL
-//#define RX_BAYANG_PROTOCOL_TELEMETRY
+#define RX_BAYANG_PROTOCOL_TELEMETRY
 //#define RX_BAYANG_PROTOCOL_BLE_BEACON
-#define RX_BAYANG_BLE_APP
+//#define RX_BAYANG_BLE_APP
 //#define RX_CX10BLUE_PROTOCOL
 
 // 0 - 7 - power for telemetry
@@ -266,12 +266,12 @@
 // enable motors if pitch / roll controls off center (at zero throttle)
 // possible values: 0 / 1
 // use in acro build only
-#define ENABLESTIX 1
-#define ENABLESTIX_TRESHOLD 0.2
+#define ENABLESTIX 0
+#define ENABLESTIX_TRESHOLD 0.3
 #define ENABLESTIX_TIMEOUT 1e6
 
 // overclock to 64Mhz
-#define ENABLE_OVERCLOCK
+//#define ENABLE_OVERCLOCK
 
 
 // limit minimum motor output to a value (0.0 - 1.0)
