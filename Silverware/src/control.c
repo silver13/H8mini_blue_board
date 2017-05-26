@@ -172,7 +172,7 @@ float rate_multiplier = 1.0;
 		  if (command == 3)
 		    {
 			    gyro_cal();	// for flashing lights
-					if (hardcoded_pid_identifier != get_hard_coded_pid_identifier()) write_pids_to_mem();
+			    write_pids_to_mem();
 			    #ifndef ACRO_ONLY
 			    acc_cal();
 				  extern float accelcal[3];
