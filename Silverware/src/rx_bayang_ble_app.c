@@ -790,8 +790,6 @@ buf[L++] = packetpersecond_short;
 /*
 buf[L++] =  onground_and_bind; //binary xxxxabcd - xxxx = error code or warning, a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 */
-
-	
 #ifdef COMBINE_PITCH_ROLL_PID_TUNING
 	buf[L++] =  B01000000+((rate_and_mode_value<<4)+onground_and_bind); //binary xxRMabcd - x = error code or warning, 1 = combined roll+pitch tuning, R = rate (0 - normal, 1 - fast) , M = mode (1 - level, 0 - acro); a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 	int PID_pause = 8;
