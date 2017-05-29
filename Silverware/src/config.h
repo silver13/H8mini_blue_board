@@ -159,6 +159,7 @@
 // a higher frequency makes the motors more linear
 // in Hz
 #define PWMFREQ 8000
+//#define PWMFREQ 16000
 
 // motor curve to use
 // the pwm frequency has to be set independently
@@ -212,6 +213,7 @@
 
 // Comment out to disable pid tuning gestures
 #define PID_GESTURE_TUNING
+#define COMBINE_PITCH_ROLL_PID_TUNING
 
 
 
