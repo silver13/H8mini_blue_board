@@ -76,10 +76,11 @@ debug_type debug;
 
 
 
-// hal
-void clk_init(void);
-
-void imu_init(void);
+extern void clk_init(void);
+extern void imu_init(void);	
+extern void rgb_init( void);
+extern void flash_load( void);
+extern void flash_hard_coded_pid_identifier(void);
 
 // looptime in seconds
 float looptime;
@@ -164,39 +165,31 @@ clk_init();
 	}
 	
 	adc_init();
-//set always on channel to on
-aux[CH_ON] = 1;	
-	
-#ifdef AUX1_START_ON
-aux[CH_AUX1] = 1;
+    
+    //set always on channel to on
+    aux[CH_ON] = 1;	
+        
+    #ifdef AUX1_START_ON
+    aux[CH_AUX1] = 1;
 #endif
+    
 	rx_init();
 
-/*
-if ( RCC->CSR & 0x80000000 )
-{
-	// low power reset flag
-	// not functioning
-	failloop(3);
-}
-*/
-	
 int count = 0;
-	
+    
 while ( count < 64 )
 {
 	vbattfilt += adc_read(0);
-//	startvref += adc_read(1);
 	delay(1000);
 	count++;
 }
+
 #ifdef RX_BAYANG_BLE_APP
    // for randomising MAC adddress of ble app - this will make the int = raw float value        
     random_seed =  *(int *)&vbattfilt ; 
     random_seed = random_seed&0xff;
 #endif
  vbattfilt = vbattfilt/64;	
-// startvref = startvref/64;
 
 	
 #ifdef STOP_LOWBATTERY
@@ -204,16 +197,15 @@ while ( count < 64 )
 if ( vbattfilt < (float) STOP_LOWBATTERY_TRESH) failloop(2);
 #endif
 
-
-
 	gyro_cal();
-	hardcoded_pid_identifier = get_hard_coded_pid_identifier();
-	if (!hardcoded_pids_changed()) {
-		read_pids_from_mem();	
-	}
-	
-extern void rgb_init( void);
-rgb_init();
+// read pid identifier for values in file pid.c
+    flash_hard_coded_pid_identifier();
+
+// load flash saved variables
+    flash_load( );
+
+// RGB led init
+    rgb_init();
 
 #ifdef SERIAL_ENABLE
 serial_init();
@@ -230,12 +222,6 @@ serial_init();
 #ifndef ACRO_ONLY
 	imu_init();
 	
-// read accelerometer calibration values from option bytes ( 2* 8bit)
-extern float accelcal[3];
-extern int readdata( unsigned int datanumber);
-
- accelcal[0] = readdata( OB->DATA0 ) - 127;
- accelcal[1] = readdata( OB->DATA1 ) - 127;
 #endif
 
 extern unsigned int liberror;

@@ -172,14 +172,14 @@ float rate_multiplier = 1.0;
 		  if (command == 3)
 		    {
 			    gyro_cal();	// for flashing lights
-			    write_pids_to_mem();
 			    #ifndef ACRO_ONLY
 			    acc_cal();
-				  extern float accelcal[3];
-				  
-				  fmc_write( accelcal[0] + 127 , accelcal[1] + 127);
-				  #endif
-			    // reset loop time 
+				#endif
+			    extern void flash_save( void);
+                extern void flash_load( void);
+                flash_save( );
+                flash_load( );
+                // reset loop time 
 			    extern unsigned lastlooptime;
 			    lastlooptime = gettime();
 		    }

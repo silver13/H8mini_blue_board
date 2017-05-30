@@ -27,7 +27,6 @@ THE SOFTWARE.
 #define MIDPOINT_RULE_INTEGRAL
 //#define SIMPSON_RULE_INTEGRAL
 
-#define PID_IDENTIFIER_ADDRESS 255
 //#define NORMAL_DTERM
 //#define SECOND_ORDER_DTERM
 #define NEW_DTERM
@@ -50,13 +49,6 @@ float pidki[PIDNUMBER] = { 15e-1  , 15e-1 , 5e-1 };
 // Kd											ROLL       PITCH     YAW
 float pidkd[PIDNUMBER] = { 6.8e-1 , 6.8e-1  , 0.0e-1 };
 
-float * pids_array[3] = {pidkp, pidki, pidkd};
-
-int number_of_increments[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
-int current_pid_axis = 0;
-int current_pid_term = 0;
-float * current_pid_term_pointer = pidkp;
-float hardcoded_pid_identifier = 0.0f;
 
 // "setpoint weighting" 0.0 - 1.0 where 0.0 = normal pid
 float b[3] = { 0.0 , 0.0 , 0.0};
@@ -72,6 +64,14 @@ const float integrallimit[PIDNUMBER] = { 0.8 , 0.8 , 0.4 };
 
 
 // non changable things below
+float * pids_array[3] = {pidkp, pidki, pidkd};
+
+int number_of_increments[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+int current_pid_axis = 0;
+int current_pid_term = 0;
+float * current_pid_term_pointer = pidkp;
+
+
 float ierror[PIDNUMBER] = { 0 , 0 , 0};	
 
 float pidoutput[PIDNUMBER];
@@ -213,54 +213,6 @@ int decrease_pid()
 	return change_pid_value(0);
 }
 
-float get_hard_coded_pid_identifier() {
-	float result = 0;
-	float * pidsArray[3] = {pidkp, pidki, pidkp};
-	for (int i=0;  i<3 ; i++) {
-		for (int j=0; j<3 ; j++) {
-			result += pidsArray[i][j] * (i+1) * (j+1);
-		}
-	}
-	return result;
-}
-
-int hardcoded_pids_changed() {
-	return fmc_read_float(PID_IDENTIFIER_ADDRESS) != get_hard_coded_pid_identifier();
-}
-
-void read_pids_from_mem() {
-	unsigned long address = 0;
-	for (int i=0;  i<3 ; i++) {
-		for (int j=0; j<3 ; j++) {
-			pids_array[i][j] = fmc_read_float(address);
-			address++;
-		}
-	}
-}
-
-void write_pids_to_mem() {
-	fmc_write_pids(pids_array);
-}
-
-void fmc_write_pids(float * pids_array[]) {
-	extern int fmc_erase( void );
-  fmc_unlock();
-	fmc_erase();
-	
-	unsigned long addresscount = 0;
-	unsigned long float_to_be_written;
-	
-	for (int i=0;  i<3 ; i++) {
-		for (int j=0; j<3 ; j++) {
-			float_to_be_written = *(unsigned long*) &pids_array[i][j];
-			writeword(addresscount, float_to_be_written);
-			addresscount++;
-		}
-	}
-	
-	fmc_write_float(255, hardcoded_pid_identifier);
-	fmc_lock();
-}
 
 float pid(int x )
 { 
