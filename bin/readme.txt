@@ -1,9 +1,5 @@
-The binaries are compiled with gcc and keil
+h8blue_default.hex - default settings
+h8blue_devo720_ch6.hex - rate 720, angle 70, acro/level switch ch6 (devo)
 
-They can be flashed with openocd or st-utility
+The binaries can be flashed with st-utility
 
-The devo ones use channel 7 for level switch
-The 720 named bin has 720 rate in acro and 90 deg in level.
-Otherwise defaults are used.
-
-last update Dec 10 - 2016 devo telemetry
