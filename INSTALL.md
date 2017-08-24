@@ -6,7 +6,7 @@ Connections to the programming port require 3 wires, ground, swclk and swdat (sw
 # Flashing over 16k
 The chip used can be flashed to 32k, but unfortunately some modifications to software need to be performed first.
 This is useful if some features make the binary over 16K.
-Read this post for more info ( http://www.rcgroups.com/forums/showpost.php?p=38162521&postcount=11339)
+Read [this post](http://www.rcgroups.com/forums/showpost.php?p=38162521&postcount=11339) for more info
 
 # Windows
 
