@@ -559,7 +559,12 @@ thrsum = 0;
 		#ifdef MOTOR_FILTER		
 		mix[i] = motorfilter(  mix[i] , i);
 		#endif	
-			
+		
+        #ifdef MOTOR_FILTER2_ALPHA	
+        float motorlpf( float in , int x) ;           
+		mix[i] = motorlpf(  mix[i] , i);
+		#endif	
+            
 		#ifdef CLIP_FF
 		mix[i] = clip_ff(mix[i], i);
 		#endif
@@ -617,6 +622,20 @@ thrsum = 0;
 	
 }
 
+#ifndef MOTOR_FILTER2_ALPHA
+#define MOTOR_FILTER2_ALPHA 0.3
+#endif
+
+
+float motor_filt[4];
+
+float motorlpf( float in , int x)
+{
+    
+    lpf(&motor_filt[x] , in , 1 - MOTOR_FILTER2_ALPHA);
+       
+    return motor_filt[x];
+}
 
 
 float hann_lastsample[4];

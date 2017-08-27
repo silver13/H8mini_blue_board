@@ -151,6 +151,7 @@
 // enable motor filter
 // hanning 3 sample fir filter
 #define MOTOR_FILTER
+//#define MOTOR_FILTER2_ALPHA 0.3
 
 // clip feedforward attempts to resolve issues that occur near full throttle
 //#define CLIP_FF
@@ -324,4 +325,8 @@
 // for the ble beacon to work after in-flight reset
 #ifdef RX_BAYANG_PROTOCOL_BLE_BEACON
 #undef STOP_LOWBATTERY
+#endif
+
+#ifdef __GNUC__
+
 #endif
