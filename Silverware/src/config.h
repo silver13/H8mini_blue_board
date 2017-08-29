@@ -125,9 +125,14 @@
 
 #define LEDS_ON CH_ON
 
+#define FN_INVERTED CH_OFF //for brushless only
+
 // switch for fpv / other, requires fet
 // comment out to disable
 //#define FPV_ON CH_ON
+
+// enable inverted flight code
+//#define INVERTED_ENABLE
 
 // Airmode keeps the PID loop stabilizing the quads orientation even at zero throttle.
 // To stop the motors on ground a switch on the remote control is necessary.

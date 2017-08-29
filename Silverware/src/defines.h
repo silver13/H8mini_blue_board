@@ -18,6 +18,13 @@
 #define PITCH 1
 #define YAW 2
 
+#define FREE 2
+#define BRAKE 3
+#define DIR1 1
+#define DIR2 0
+
+#define FORWARD DIR2
+#define REVERSE DIR1
 
 #define FILTERCALC( sampleperiod, filtertime) (1.0f - ((float)sampleperiod) / ((float)filtertime))
 
