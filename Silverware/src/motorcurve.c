@@ -1,5 +1,48 @@
 #include "config.h"
 
+#ifdef BOLDCLASH_716MM_8K
+
+float motormap(float input)
+{
+	// this is a thrust to pwm function
+	//  float 0 to 1 input and output
+	// output can go negative slightly
+    // boldclash f03 with 716 motors ant 4 blade prop
+	// a*x^2 + b*x + c
+
+	if (input > 1)
+		input = 1;
+	if (input < 0)
+		input = 0;
+
+	input = input * input * 0.51f + input * (0.44f);
+	input += 0.05f;
+
+	return input;
+}
+#endif
+
+#ifdef BOLDCLASH_716MM_24K
+
+float motormap(float input)
+{
+	// this is a thrust to pwm function
+	//  float 0 to 1 input and output
+	// output can go negative slightly
+    // boldclash f03 with 716 motors ant 4 blade prop
+	// a*x^2 + b*x + c
+
+	if (input > 1)
+		input = 1;
+	if (input < 0)
+		input = 0;
+
+	input = input * input * 0.149f + input * (0.846f);
+	input += 0.005f;
+
+	return input;
+}
+#endif
 
 #ifdef MOTOR_CURVE_6MM_490HZ
 // the old map for 490Hz

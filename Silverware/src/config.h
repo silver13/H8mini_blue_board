@@ -149,12 +149,9 @@
 // automatically remove center bias ( needs throttle off for 1 second )
 //#define STOCK_TX_AUTOCENTER
 
-// Gestures enable ( gestures 1 = acc only)
-//#define GESTURES1_ENABLE
-#define GESTURES2_ENABLE
-
-// enable motor filter
-// hanning 3 sample fir filter
+// enable motor filter - select one
+// motorfilter1: hanning 3 sample fir filter
+// motorfilter2: 1st lpf, 0.2 - 0.6 , 0.6 = less filtering
 #define MOTOR_FILTER
 //#define MOTOR_FILTER2_ALPHA 0.3
 
@@ -207,6 +204,7 @@
 // Flash saving features
 #define DISABLE_HEADLESS
 #define DISABLE_FLIP_SEQUENCER
+//#define DISABLE_GESTURES2
 
 // led brightness in-flight ( solid lights only)
 // 0- 15 range
