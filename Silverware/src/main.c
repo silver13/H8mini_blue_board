@@ -481,6 +481,7 @@ while ( (gettime() - time) < LOOPTIME ) delay(10);
 // 8 - i2c error main loop
 // 6 - loop time issue
 
+#ifndef BUZZER_ENABLE
 void failloop( int val)
 {
 	for ( int i = 0 ; i <= 3 ; i++)
@@ -501,7 +502,42 @@ void failloop( int val)
 	}	
 	
 }
+#else
 
+static void delay3( int x)
+{
+    x>>=8;
+    for( ; x> 0 ; x--)
+    {
+        #ifdef BUZZER_ENABLE
+        failsafe = 1;
+        buzzer();
+        #endif
+        delay(256);
+    }
+} 
+
+void failloop( int val)
+{
+	for ( int i = 0 ; i <= 3 ; i++)
+	{
+		pwm_set( i ,0 );
+	}	
+
+	while(1)
+	{
+		for ( int i = 0 ; i < val; i++)
+		{
+		 ledon( 255);		
+		 delay3(200000);
+		 ledoff( 255);	
+		 delay3(200000);			
+		}
+		delay3(800000);
+	}	
+	
+}
+#endif
 void HardFault_Handler(void)
 {
 	failloop(5);

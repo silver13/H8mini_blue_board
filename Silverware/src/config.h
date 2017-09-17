@@ -211,7 +211,7 @@
 #define LED_BRIGHTNESS 15
 
 
-
+// external buzzer if connected - pins in hardware.h
 //#define BUZZER_ENABLE
 
 
