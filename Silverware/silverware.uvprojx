@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>H8_blue</TargetName>
+      <TargetName>BWhoop</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
@@ -48,7 +48,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Objects\</OutputDirectory>
-          <OutputName>h8blue</OutputName>
+          <OutputName>bwhoop</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -273,7 +273,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x4000</Size>
+                <Size>0x8000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -463,14 +463,14 @@
               <FilePath>.\src\buzzer.c</FilePath>
             </File>
             <File>
+              <FileName>flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\flash.c</FilePath>
+            </File>
+            <File>
               <FileName>gestures.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\gestures.c</FilePath>
-            </File>
-            <File>
-              <FileName>rx_cg023_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\rx_cg023_protocol.c</FilePath>
             </File>
             <File>
               <FileName>rx_bayang_protocol.c</FileName>
@@ -493,6 +493,16 @@
               <FilePath>.\src\rx_bayang_protocol_telemetry.c</FilePath>
             </File>
             <File>
+              <FileName>rx_nrf24_bayang_telemetry.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\rx_nrf24_bayang_telemetry.c</FilePath>
+            </File>
+            <File>
+              <FileName>rx_cg023_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\rx_cg023_protocol.c</FilePath>
+            </File>
+            <File>
               <FileName>rx_h7_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\rx_h7_protocol.c</FilePath>
@@ -503,14 +513,9 @@
               <FilePath>.\src\rx_cx10blue_protocol.c</FilePath>
             </File>
             <File>
-              <FileName>osd_ltm.c</FileName>
+              <FileName>rx_sbus.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\osd_ltm.c</FilePath>
-            </File>
-            <File>
-              <FileName>flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\flash.c</FilePath>
+              <FilePath>.\src\rx_sbus.c</FilePath>
             </File>
             <File>
               <FileName>led.c</FileName>
@@ -608,6 +613,11 @@
               <FilePath>.\src\drv_fmc1.c</FilePath>
             </File>
             <File>
+              <FileName>drv_fmc2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\drv_fmc2.c</FilePath>
+            </File>
+            <File>
               <FileName>drv_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\drv_gpio.c</FilePath>
@@ -623,14 +633,14 @@
               <FilePath>.\src\drv_pwm.c</FilePath>
             </File>
             <File>
-              <FileName>drv_dshot.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\drv_dshot.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_esc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\drv_esc.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_dshot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\drv_dshot.c</FilePath>
             </File>
             <File>
               <FileName>drv_serial.c</FileName>
@@ -651,6 +661,11 @@
               <FileName>drv_spi_3wire.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\drv_spi_3wire.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_spi_none.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\drv_spi_none.c</FilePath>
             </File>
             <File>
               <FileName>drv_time.c</FileName>

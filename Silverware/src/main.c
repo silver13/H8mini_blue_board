@@ -49,7 +49,7 @@ THE SOFTWARE.
 #include "drv_softi2c.h"
 #include "drv_serial.h"
 #include "buzzer.h"
-#include "drv_fmc.h"
+#include "drv_fmc2.h"
 
 #include "binary.h"
 
@@ -59,6 +59,13 @@ THE SOFTWARE.
 
 
 
+#ifdef __GNUC__
+#ifndef SOFT_LPF_NONE
+#warning the soft lpf may not work correctly with gcc due to longer loop time
+#endif
+#endif
+
+
 #ifdef DEBUG
 #include "debug.h"
 debug_type debug;
@@ -66,34 +73,30 @@ debug_type debug;
 
 
 
-#ifdef __GNUC__
-// gcc warnings and fixes
-#ifdef AUTO_VDROP_FACTOR
-#undef AUTO_VDROP_FACTOR
-#warning #define AUTO_VDROP_FACTOR not working with gcc, using fixed factor
-#endif
-#endif
 
 
-
-extern void clk_init(void);
-extern void imu_init(void);	
-extern void rgb_init( void);
+// hal
+void clk_init(void);
+void imu_init(void);
 extern void flash_load( void);
 extern void flash_hard_coded_pid_identifier(void);
+
 
 // looptime in seconds
 float looptime;
 // filtered battery in volts
 float vbattfilt = 0.0;
-float vbatt = 4.2;
 float vbatt_comp = 4.2;
+// voltage reference for vcc compensation
+float vreffilt = 1.0;
+// average of all motors
+float thrfilt = 0;
 
 unsigned int lastlooptime;
 // signal for lowbattery
 int lowbatt = 1;	
-// signal for lowbattery second threshold
-int lowbatt2 = 1;
+
+//int minindex = 0;
 
 // holds the main four channels, roll, pitch , yaw , throttle
 float rx[4];
@@ -122,8 +125,9 @@ int random_seed = 0;
 
 int main(void)
 {
-	delay(1000);
 	
+	delay(1000);
+
 
 #ifdef ENABLE_OVERCLOCK
 clk_init();
@@ -149,87 +153,81 @@ clk_init();
 
 	sixaxis_init();
 	
-	
 	if ( sixaxis_check() ) 
 	{
-		#ifdef SERIAL_INFO	
-		printf( " MPU found \n" );
-		#endif
+		
 	}
 	else 
 	{
-		#ifdef SERIAL_INFO	
-		printf( "ERROR: MPU NOT FOUND \n" );	
-		#endif
+        //gyro not found   
 		failloop(4);
 	}
 	
 	adc_init();
-    
-    //set always on channel to on
-    aux[CH_ON] = 1;	
-        
-    #ifdef AUX1_START_ON
-    aux[CH_AUX1] = 1;
+//set always on channel to on
+aux[CH_ON] = 1;	
+	
+#ifdef AUX1_START_ON
+aux[CH_AUX1] = 1;
 #endif
-    
 	rx_init();
 
+	
 int count = 0;
-    
+	
 while ( count < 64 )
 {
 	vbattfilt += adc_read(0);
 	delay(1000);
 	count++;
 }
-
 #ifdef RX_BAYANG_BLE_APP
    // for randomising MAC adddress of ble app - this will make the int = raw float value        
     random_seed =  *(int *)&vbattfilt ; 
     random_seed = random_seed&0xff;
 #endif
  vbattfilt = vbattfilt/64;	
+// startvref = startvref/64;
 
 	
 #ifdef STOP_LOWBATTERY
 // infinite loop
-if ( vbattfilt < (float) STOP_LOWBATTERY_TRESH) failloop(2);
+if ( vbattfilt < (float) 3.3f) failloop(2);
 #endif
 
+
+
 	gyro_cal();
-// read pid identifier for values in file pid.c
-    flash_hard_coded_pid_identifier();
 
-// load flash saved variables
-    flash_load( );
-
-// RGB led init
-    rgb_init();
+extern void rgb_init( void);
+rgb_init();
 
 #ifdef SERIAL_ENABLE
 serial_init();
 #endif
 
-#ifdef SERIAL_INFO	
-		printf( "Vbatt %2.2f \n", vbattfilt );
-		#ifdef NOMOTORS
-    printf( "NO MOTORS\n" );
-		#warning "NO MOTORS"
-		#endif
-#endif
 
-#ifndef ACRO_ONLY
+
 	imu_init();
-	
+
+#ifdef FLASH_SAVE2
+// read accelerometer calibration values from option bytes ( 2* 8bit)
+extern float accelcal[3];
+ accelcal[0] = flash2_readdata( OB->DATA0 ) - 127;
+ accelcal[1] = flash2_readdata( OB->DATA1 ) - 127;
 #endif
 
-extern unsigned int liberror;
+#ifdef FLASH_SAVE1
+// read pid identifier for values in file pid.c
+    flash_hard_coded_pid_identifier();
+
+// load flash saved variables
+    flash_load( );
+#endif
+
+extern int liberror;
 if ( liberror ) 
 {
-	  #ifdef SERIAL_INFO	
-		printf( "ERROR: I2C \n" );	
-		#endif
 		failloop(7);
 }
 
@@ -237,7 +235,6 @@ if ( liberror )
 
  lastlooptime = gettime();
 
- float thrfilt;
 
 //
 //
@@ -271,40 +268,48 @@ if ( liberror )
 			// endless loop
 		}
 
-
-		#ifdef ACRO_ONLY
-		gyro_read();
-		#else		
+        // read gyro and accelerometer data	
 		sixaxis_read();
 		
-		extern void imu_calc(void);		
-		imu_calc();		
-		#endif
-
-		float battadc = adc_read(0);
-		vbatt = battadc;
 		
-// all flight calculations and motors
+        // all flight calculations and motors
 		control();
 
+        // attitude calculations for level mode
+ 		extern void imu_calc(void);		
+		imu_calc();       
+      
 // battery low logic
+
+#ifdef ADC_VREF_SCALE
+        // account for vcc changes
+		float battadc = adc_read(0)*vreffilt; 
+        lpf ( &vreffilt , adc_read(1)  , 0.9968f);	
+#else
+        float battadc = adc_read(0); 
+#endif        
 		
-		float hyst;
 
 		// average of all 4 motor thrusts
 		// should be proportional with battery current			
 		extern float thrsum; // from control.c
-		
-		//vref = startvref / adc_read(1) ;
-		
-	//	lpf ( &vref, startvref / adc_read(1) , 0.9968f );
-		
+	
 		// filter motorpwm so it has the same delay as the filtered voltage
 		// ( or they can use a single filter)		
 		lpf ( &thrfilt , thrsum , 0.9968f);	// 0.5 sec at 1.6ms loop time	
-		
-		lpf ( &vbattfilt , battadc , 0.9968f);		
 
+        static float vbattfilt_corr = 4.2;
+        // li-ion battery model compensation time decay ( 18 seconds )
+        lpf ( &vbattfilt_corr , vbattfilt , FILTERCALC( 1000 , 18000e3) );
+	
+        lpf ( &vbattfilt , battadc , 0.9968f);
+
+
+// compensation factor for li-ion internal model
+// zero to bypass
+#define CF1 0.25f
+
+        float tempvolt = vbattfilt*( 1.00f + CF1 )  - vbattfilt_corr* ( CF1 );
 
 #ifdef AUTO_VDROP_FACTOR
 
@@ -312,53 +317,66 @@ static float lastout[12];
 static float lastin[12];
 static float vcomp[12];
 static float score[12];
-static int current_index = 0;
+static int z = 0;
+static int minindex = 0;
+static int firstrun = 1;
 
-int minindex = 0;
-float min = score[0];
 
+if( thrfilt > 0.1f )
 {
-	int i = current_index;
-
-	vcomp[i] = vbattfilt + (float) i *0.1f * thrfilt;
+	vcomp[z] = tempvolt + (float) z *0.1f * thrfilt;
 		
-	if ( lastin[i] < 0.1f ) lastin[i] = vcomp[i];
-	float temp;
+	if ( firstrun ) 
+    {
+        for (int y = 0 ; y < 12; y++) lastin[y] = vcomp[z];
+        firstrun = 0;
+    }
+	float ans;
 	//	y(n) = x(n) - x(n-1) + R * y(n-1) 
 	//  out = in - lastin + coeff*lastout
 		// hpf
-	 temp = vcomp[i] - lastin[i] + FILTERCALC( 1000*12 , 1000e3) *lastout[i];
-		lastin[i] = vcomp[i];
-		lastout[i] = temp;
-	 lpf ( &score[i] , fabsf(temp) , FILTERCALC( 1000*12 , 10e6 ) );
+	ans = vcomp[z] - lastin[z] + FILTERCALC( 1000*12 , 6000e3) *lastout[z];
+	lastin[z] = vcomp[z];
+	lastout[z] = ans;
+	lpf ( &score[z] , ans*ans , FILTERCALC( 1000*12 , 60e6 ) );	
+	z++;
+       
+    if ( z >= 12 )
+    {
+        z = 0;
+        float min = score[0]; 
+        for ( int i = 0 ; i < 12; i++ )
+        {
+         if ( (score[i]) < min )  
+            {
+                min = (score[i]);
+                minindex = i;
+                // add an offset because it seems to be usually early
+                minindex++;
+            }
+        }   
+    }
 
-	}
-	current_index++;
-	if ( current_index >= 12 ) current_index = 0;
-
-	for ( int i = 0 ; i < 12; i++ )
-	{
-	 if ( score[i] < min )  
-		{
-			min = score[i];
-			minindex = i;
-		}
 }
 
 #undef VDROP_FACTOR
 #define VDROP_FACTOR  minindex * 0.1f
 #endif
 
-		if ( lowbatt ) hyst = HYST;
-		else hyst = 0.0f;
-		
-		if ( vbattfilt + (float) VDROP_FACTOR * thrfilt <(float) VBATTLOW + hyst ) lowbatt = 1;
-		else lowbatt = 0;
+    float hyst;
+    if ( lowbatt ) hyst = HYST;
+    else hyst = 0.0f;
 
-	vbatt_comp = vbattfilt + (float) VDROP_FACTOR * thrfilt; 	
+    if (( tempvolt + (float) VDROP_FACTOR * thrfilt <(float) VBATTLOW + hyst )
+        || ( vbattfilt < ( float ) 2.7f ) )
+        lowbatt = 1;
+    else lowbatt = 0;
 
+    vbatt_comp = tempvolt + (float) VDROP_FACTOR * thrfilt; 	
+
+           
 #ifdef DEBUG
-		debug.vbatt_comp = vbatt_comp ;
+	debug.vbatt_comp = vbatt_comp ;
 #endif		
 	
 
@@ -394,14 +412,21 @@ else
                	#ifndef DISABLE_GESTURES2
 						else if (ledblink)
 						{
+                            unsigned long time = gettime();
 							if (!ledcommandtime)
-								  ledcommandtime = gettime();
-							if (gettime() - ledcommandtime > 500000)
+                                {
+								  ledcommandtime = time;
+                                  ledoff( 255); 
+                                }
+							if ( time - ledcommandtime > 500000)
 							    {
 								    ledblink--;
 								    ledcommandtime = 0;
 							    }
-							ledflash(500000, 3);
+                             if ( time - ledcommandtime > 300000)
+							    {
+                                    ledon( 255);
+							    }
 						}
 						else
 					#endif // end gesture led flash
@@ -418,22 +443,10 @@ else
 		
 	}
 #endif
-#if ( AUX_LED_NUMBER > 0)		
-//AUX led flash logic		
-		if ( lowbatt2 ) 
-				auxledflash ( 250000 , 8);	
-		else 
-		{
-			if ( rxmode == RXMODE_BIND)
-			{// bind mode
-			auxledflash ( 100000 , 12);
-			}
-			else auxledoff( 255);
-		}
-#endif
 
 
 #if ( RGB_LED_NUMBER > 0)
+// RGB led control
 extern	void rgb_led_lvc( void);
 rgb_led_lvc( );
 #endif
@@ -458,14 +471,12 @@ rgb_led_lvc( );
         }
     }
 #endif
-		
+
+// receiver function
 checkrx();
-	
-extern void osdcycle();	
-osdcycle();
-		
-// the delay is required or it becomes endless loop ( truncation in time routine)
-while ( (gettime() - time) < LOOPTIME ) delay(10); 		
+
+
+while ( (gettime() - time) < LOOPTIME );	
 
 		
 	}// end loop
@@ -481,7 +492,6 @@ while ( (gettime() - time) < LOOPTIME ) delay(10);
 // 8 - i2c error main loop
 // 6 - loop time issue
 
-#ifndef BUZZER_ENABLE
 void failloop( int val)
 {
 	for ( int i = 0 ; i <= 3 ; i++)
@@ -502,42 +512,8 @@ void failloop( int val)
 	}	
 	
 }
-#else
 
-static void delay3( int x)
-{
-    x>>=8;
-    for( ; x> 0 ; x--)
-    {
-        #ifdef BUZZER_ENABLE
-        failsafe = 1;
-        buzzer();
-        #endif
-        delay(256);
-    }
-} 
 
-void failloop( int val)
-{
-	for ( int i = 0 ; i <= 3 ; i++)
-	{
-		pwm_set( i ,0 );
-	}	
-
-	while(1)
-	{
-		for ( int i = 0 ; i < val; i++)
-		{
-		 ledon( 255);		
-		 delay3(200000);
-		 ledoff( 255);	
-		 delay3(200000);			
-		}
-		delay3(800000);
-	}	
-	
-}
-#endif
 void HardFault_Handler(void)
 {
 	failloop(5);

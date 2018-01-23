@@ -86,48 +86,10 @@ void ledoff( uint8_t val )
 	#endif
 #endif
 #if ( LED_NUMBER > 3 )
-	#ifdef LED4_INVERT
+	#ifdef LED1_INVERT
 	if ( val&8)	GPIO_SetBits( LED4PORT, LED4PIN);
 	#else
 	if ( val&8) GPIO_ResetBits( LED4PORT, LED4PIN);	
-	#endif
-#endif
-}
-
-void auxledon( uint8_t val )
-{
-	
-#if ( AUX_LED_NUMBER > 0 )
-	#ifdef AUX_LED1_INVERT
-	if ( val&1)	GPIO_ResetBits( AUX_LED1PORT, AUX_LED1PIN);
-	#else
-	if ( val&1)	GPIO_SetBits( AUX_LED1PORT, AUX_LED1PIN);
-	#endif
-#endif
-#if ( AUX_LED_NUMBER > 1 )
-	#ifdef AUX_LED2_INVERT
-	if ( val&2)	GPIO_ResetBits( AUX_LED2PORT, AUX_LED2PIN);
-	#else
-	if ( val&2)	GPIO_SetBits( AUX_LED2PORT, AUX_LED2PIN);
-	#endif
-#endif
-	
-}
-
-void auxledoff( uint8_t val )
-{
-#if ( AUX_LED_NUMBER > 0 )
-	#ifdef AUX_LED1_INVERT
-	if ( val&1) GPIO_SetBits( AUX_LED1PORT, AUX_LED1PIN);
-	#else
-	if ( val&1) GPIO_ResetBits( AUX_LED1PORT, AUX_LED1PIN);
-	#endif
-#endif
-#if ( AUX_LED_NUMBER > 1 )
-	#ifdef AUX_LED2_INVERT
-	if ( val&2) GPIO_SetBits( AUX_LED2PORT, AUX_LED2PIN);	
-	#else
-	if ( val&2) GPIO_ResetBits( AUX_LED2PORT, AUX_LED2PIN);	
 	#endif
 #endif
 }
@@ -142,20 +104,6 @@ void ledflash( uint32_t period , int duty )
 	else
 	{
 		ledoff(LEDALL);
-	}
-#endif	
-}
-
-void auxledflash( uint32_t period , int duty )
-{
-#if ( AUX_LED_NUMBER > 0)
-	if ( gettime() % period > (period*duty)>>4 )
-	{
-		auxledon(LEDALL);
-	}
-	else
-	{
-		auxledoff(LEDALL);
 	}
 #endif	
 }

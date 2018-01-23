@@ -39,6 +39,17 @@ return ga;
 }
 
 
+// calculates the coefficient for lpf filter 
+float lpfcalc_hz(float sampleperiod, float filterhz) {
+float ga = 1.0f - sampleperiod * filterhz;
+if (ga > 1.0f)
+	ga = 1.0f;
+if (ga < 0.0f)
+	ga = 0.0f;
+return ga;
+}
+
+
 float mapf(float x, float in_min, float in_max, float out_min, float out_max)
 {
 
@@ -115,14 +126,6 @@ float fastcos( float x )
 }
 
 
-void limit180(float *x)
-{
-	while (*x < -180)
-		*x += 360;
-	while (*x > 180)
-		*x -= 360;
-}
-
 
 #include <inttypes.h>
 uint32_t seed = 7;
@@ -134,6 +137,8 @@ uint32_t random( void)
   return seed;
 }
 
+
+// serial print routines
 #ifdef SERIAL_ENABLE
 
 extern void buffer_add(int val );
@@ -142,7 +147,7 @@ extern void buffer_add(int val );
 // print a 32bit signed int
 void print_int( int val )
 {
-// multiple of 4 or it will pad it anyway
+// multiple of 4
 #define SP_INT_BUFFERSIZE 12	
 char buffer2[SP_INT_BUFFERSIZE];
  

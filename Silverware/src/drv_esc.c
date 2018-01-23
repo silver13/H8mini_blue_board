@@ -25,7 +25,7 @@
 
 //#define ENABLE_ONESHOT
 
-//#define ENABLE_ONESHOT42
+#define ENABLE_ONESHOT42
 
 // signal repetition frequency (hertz) min 185 max 500
 #define ESC_FREQ_PPM 500

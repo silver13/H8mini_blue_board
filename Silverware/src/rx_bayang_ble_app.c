@@ -64,7 +64,7 @@ THE SOFTWARE.
 // You can use letters A to Z, numbers 0 to 9 and some special characters like # / \ - _ etc.
 // Please use only caps lock letters because name is not case sensitive. Avoid using blanks in name!
 
-#define MY_QUAD_NAME "H8BLUE"
+#define MY_QUAD_NAME "BWHOOP"
 
 // MY_QUAD_ID defines unique ID for MAC address. Leave 127 or replace it with any other value between 0 and 255.
 // Use ONLY values between 0 and 255!
@@ -88,18 +88,16 @@ THE SOFTWARE.
 // If you want to have different image in SilverVISE assigned to your quadcopter, you can override default value that represents quadcopter model you flash.
 // Do it here by uncommenting and setting "#define MY_QUAD_MODEL".
 // If disabled, value is set by firmware itself (based on what quad model firmware is made for).
-// But in case you have, for example H8 blue board in Bayangtoys X9 frame, you can set your quad model here to X9 (value 0x12)
+// For this firmware, default image is for BWHOOP with blue canopy. But in case you have orange one, set value to 0x52
 // and get propper image in SilverVISE application.
-// For this firmware and H8 blue board, values are:
+// To resume, fo this firmware, values are:
 //
-//0x11 - H8 mini blue board - original quadcopter (default for H8 blue board)
-//0x12 - X9 frame with blue board
-//0x13 - Custom frame with blue board
+//0x51 - BWHOOP B-03 - blue canopy (default)
+//0x52 - BWHOOP B-03 - orange canopy
 //
-// Values 0x01, 0x02 and 0x03 are reserved for H8 green board. Other values are reserved for H101/H8S firmware.
 // Value 0x00 represents unknown quad (generic image)
 
-//#define MY_QUAD_MODEL 0x11
+//#define MY_QUAD_MODEL 0x52
 
 // *** THE FOLLOWING THREE SETTINGS USE ONLY IF YOU HAVE PROBLEMS WITH VERY OFTEN "TLM DISCONNECTING" ALARMS, ESPECIALLY ON FULL THROTTLE ***
 // If you do not experience these problems and have stable telemetry connection, do not enable and set TX_POWER_GENERAL, TX_POWER_ON_TLM nor USE_ALL_BLE_CHANNELS
@@ -115,8 +113,6 @@ THE SOFTWARE.
 //usually TX_POWER_ON_TLM need to be lower than TX_POWER_GENERAL, but experiment if that combination does not help...
 // If TX_POWER_GENERAL/TX_POWER_ON_TLM still produces constant TLM DISCONNECTED errors when motors are on and on high throttle, try also enabling USE_ALL_BLE_CHANNELS.
 // You can use all three settings in the same time or experiment with one or two of them until you get better and stable bluetooth signal.
-
-#define OPTION_GAUSSIAN
 
 //#define USE_ALL_BLE_CHANNELS
 
@@ -221,21 +217,11 @@ aux[CH_AUX1] = 1;
 
 	
 #ifdef RADIO_XN297L
-
-#ifdef OPTION_GAUSSIAN
-// Gauss filter amplitude - lowest
-static uint8_t demodcal[2] = { 0x39 , B00000001 };
-writeregs( demodcal , sizeof(demodcal) );
-#endif
-
+	
 #define XN_TO_RX B10001111
 #define XN_TO_TX B10000010
-
-#ifdef TX_POWER_GENERAL
-#define XN_POWER B00000111|((TX_POWER_GENERAL&7)<<3)
-#else
 #define XN_POWER B00111111
-#endif
+	
 #endif
 
 
@@ -747,7 +733,7 @@ buf[L++] =  0x2F; //PID+TLM datatype_and_packetID;  // xxxxyyyy -> yyyy = 1111 p
 #ifdef MY_QUAD_MODEL
 	buf[L++] =  MY_QUAD_MODEL;
 #else
-	buf[L++] =  0x11;  // quad model (00 - unknown, 11- H8 mini blue board, 20 - H101... check comments at start of this file for details)
+	buf[L++] =  0x51;  //quad model (00 - unknown, 51 - BWHOOP B-03 blue canopy, 52 - BWHOOP B-03 orange canopy... check comments at start of this file for details)
 #endif
 
 buf[L++] = random_seed; //already custom entry - need to be randomized
@@ -790,6 +776,8 @@ buf[L++] = packetpersecond_short;
 /*
 buf[L++] =  onground_and_bind; //binary xxxxabcd - xxxx = error code or warning, a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 */
+
+	
 #ifdef COMBINE_PITCH_ROLL_PID_TUNING
 	buf[L++] =  B01000000+((rate_and_mode_value<<4)+onground_and_bind); //binary xxRMabcd - x = error code or warning, 1 = combined roll+pitch tuning, R = rate (0 - normal, 1 - fast) , M = mode (1 - level, 0 - acro); a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
 	int PID_pause = 8;
@@ -895,8 +883,6 @@ for ( int i = string_len ; i < 6; i++)
 	buf[L++] = ' '; //blank
 	}
 #else
-
-
 buf[L++]=(char)'N';
 buf[L++]=(char)'O';
 buf[L++]=(char)'N';
@@ -904,9 +890,6 @@ buf[L++]=(char)'A';
 buf[L++]=(char)'M';
 buf[L++]=(char)'E';
 #endif
-		
-	
-	
 buf[L++] =  0x00; //reserved for future use
 buf[L++] = packetpersecond_short;
 buf[L++] =  onground_and_bind; //binary xxxxabcd - xxxx = error code or warning, a -> 0 = stock TX, 1= other TX, b -> 0 = not failsafe, 1 = failsafe, c = 0 -> not bound, 1 -> bound, d = 0 -> in the air, 1 = on the ground;
@@ -1211,3 +1194,4 @@ unsigned long temptime = gettime();
 
 
 #endif
+
