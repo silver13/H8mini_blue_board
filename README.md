@@ -5,6 +5,7 @@
 Specific Blue instructions:
 https://www.rcgroups.com/forums/showthread.php?2721755-H8-blue-board-flashing-instructions#post35501995
 
+Warning: new blue board version is not compatible with this firmware as it uses an obscure PAN163CX microcontroller with integrated XN297L. To distinguish it from the supported version look through the battery bay to determine the antenna pin location. On older boards it was on the side, on the newer it's centered, see https://www.rcgroups.com/forums/showpost.php?p=40328262&postcount=14761 .
 
 From rcg user __kmtam__
 > Hi all, I finally got the h8mini blue board erased and flashed to Silverxxx firmware after zillion times of tried and error.
