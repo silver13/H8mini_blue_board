@@ -99,6 +99,8 @@
 // CH_ON - on always ( all protocols)
 // CH_OFF - off always ( all protocols)
 
+#define HEADLESSMODE CH_HEADFREE
+
 // rates / expert mode
 #define RATES CH_EXPERT
 
